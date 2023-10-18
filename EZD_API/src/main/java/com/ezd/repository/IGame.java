@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.ezd.models.Game;
 @Repository
-public interface IGame extends JpaRepository<Game,Integer>{
+public interface IGame extends JpaRepository<Game,Long>{
 
 }
