@@ -1,107 +1,110 @@
 package com.ezd.controllers;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.util.Optional;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.ezd.models.Game;
-import com.ezd.payload.Response;
-import com.ezd.service.GameService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import com.ezd.repository.GameService;
+@CrossOrigin(origins = "http://localhost:3000/")
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000/")
-@RequestMapping("/api/games")
+@RequestMapping("/api/games/")
 public class GameController {
 
-	@Autowired
-	private GameService gameService;
-	@GetMapping("/")
-	public List<Game> getAllGames() {
-	    List<Game> games = gameService.getAllGames();
-	    for (Game game : games) {
-	        game.setBase64Image(Base64.getEncoder().encodeToString(game.getImageData()));
-	    }
-	    return games;
-	}
+    @Autowired
+    private GameService serviceRepository;
 
-	  @DeleteMapping("/delete/{id}")
-	    public void deleteGame(@PathVariable Long id) {
-	        gameService.delete(id);
-	    }
-
-
-	@PostMapping("/uploadFile")
-	public Response uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("nameGame") String nameGame) {
-	    Game game = gameService.storeGame(file, nameGame);
-
-	    String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-	            .path("/downloadFile/")
-	            .path(game.getImageFileName())
-	            .toUriString();
-
-	    return new Response(game.getImageFileName(), fileDownloadUri,
-	            file.getContentType(), file.getSize());
-	}
-	
-	@PostMapping("/edit/{id}")
-	public ResponseEntity<String> editGame(@PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("nameGame") String nameGame) {
-	    // Lấy trò chơi cần chỉnh sửa từ dự liệu
-	    Game game = gameService.getGame(id);
-
-	    if (game == null) {
-	        return new ResponseEntity<>("Game not found", HttpStatus.NOT_FOUND);
-	    }
-
-	    // Gọi phương thức cập nhật từ service
-	    Game updatedGame = gameService.updateGame(id, file, nameGame);
-
-	    if (updatedGame == null) {
-	        return new ResponseEntity<>("Update failed", HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-
-	    return new ResponseEntity<>("Game updated successfully", HttpStatus.OK);
-	}
-
-	
-	@GetMapping("/downloadFile/{fileName:.+}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
-	    // Try to parse the fileName as a Long (assuming it's a game ID)
-	    Long gameId = Long.parseLong(fileName);
-
-	    // Attempt to get the game by ID (assuming imageFileName is not unique)
-	    Game game = gameService.getGame(gameId);
-
-	    if (game == null) {
-	        // Handle the case where the Game is not found
-	        return ResponseEntity.notFound().build();
-	    }
-
-	    // Create a ByteArrayResource from the imageData of the Game
-	    ByteArrayResource resource = new ByteArrayResource(game.getImageData());
-
-	    return ResponseEntity.ok()
-	        .contentType(MediaType.parseMediaType(game.getImageFileType()))
-	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + game.getImageFileName() + "\"")
-	        .body(resource);
-	}
+    @Autowired
+    private Cloudinary cloudinary; // Inject Cloudinary bean
+    @GetMapping("")
+    public List<Game> getAllServices() {
+        return serviceRepository.findAll();
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<Game> getServiceById(@PathVariable Long id) {
+        Optional<Game> service = serviceRepository.findById(id);
+        if (service.isPresent()) {
+            return new ResponseEntity<>(service.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
     
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
+        if (serviceRepository.existsById(id)) {
+            serviceRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("edit/{id}")
+    public ResponseEntity<Game> editService(@PathVariable Long id, @RequestParam("nameGame") String nameGame, @RequestParam("imageName") MultipartFile imageName) {
+        Optional<Game> optionalService = serviceRepository.findById(id);
+        if (optionalService.isPresent()) {
+            Game service = optionalService.get();
+            service.setNameGame(nameGame);
+
+            try {
+                if (imageName != null) {
+                    // Lưu trữ tệp hình ảnh lên Cloudinary và lấy public ID
+                    Map uploadResult = cloudinary.uploader().upload(imageName.getBytes(), ObjectUtils.emptyMap());
+                    String imageUrl = (String) uploadResult.get("url");
+                    service.setImageName(imageUrl);
+                }
+
+                Game updatedService = serviceRepository.save(service);
+                return new ResponseEntity<>(updatedService, HttpStatus.OK);
+            } catch (IOException e) {
+                // Xử lý lỗi
+                e.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PostMapping("add")
+    public Game createService(@RequestParam("nameGame") String nameGame, @RequestParam("imageName") MultipartFile imageName) {
+        try {
+            // Lưu trữ tệp hình ảnh lên Cloudinary và lấy public ID
+            Map uploadResult = cloudinary.uploader().upload(imageName.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
+
+            Game service = new Game();
+            service.setNameGame(nameGame);
+            service.setImageName(imageUrl); // Lưu trữ URL của hình ảnh
+
+            return serviceRepository.save(service);
+        } catch (IOException e) {
+            // Xử lý lỗi
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
+
+
+
