@@ -4,17 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Data;
-
 @Data
 @Entity
-@Table(name = "Game")
 public class Game {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idGame;
+    private Long id;
     private String nameGame;
-    private String imageGame;
-}
+    private String imageName;  // Trường để lưu trữ tên tệp hình ảnh
 
+    // Constructors, getters, and setters
+}
