@@ -11,37 +11,44 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Data
 @Entity
 public class Game {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nameGame;
-    private String imageName; // Trường để lưu trữ tên tệp hình ảnh
+    private String imageName;
 
     @ManyToMany
     @JoinTable(
-        name = "game_level", // Tên bảng nối
+        name = "game_level",
         joinColumns = @JoinColumn(name = "game_id"),
         inverseJoinColumns = @JoinColumn(name = "level_id")
     )
-    private List<Level> levels; // Danh sách các cấp độ
+    @JsonManagedReference
+    private List<Level> levels;
+
     @ManyToMany
     @JoinTable(
-        name = "game_role", // Tên bảng nối
+        name = "game_role",
         joinColumns = @JoinColumn(name = "game_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<PerfectRole> roles; // Danh sách các cấp độ
+    @JsonManagedReference
+    private List<PerfectRole> roles;
+
     @ManyToMany
     @JoinTable(
-        name = "game_gender", // Tên bảng nối
+        name = "game_gender",
         joinColumns = @JoinColumn(name = "game_id"),
         inverseJoinColumns = @JoinColumn(name = "gender_id")
     )
-    private List<Gender> genders; // Danh sách các giới tính
+    @JsonManagedReference
+    private List<Gender> genders;
 
     // Constructors, getters, and setters
 }
+

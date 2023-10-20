@@ -11,6 +11,8 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Data
 @Entity
 public class Gender {
@@ -19,13 +21,10 @@ public class Gender {
     private Long id;
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-        name = "game_gender",
-        joinColumns = @JoinColumn(name = "gender_id"),
-        inverseJoinColumns = @JoinColumn(name = "game_id")
-    )
-    private List<Game> games; // Games associated with this gender
+    @ManyToMany(mappedBy = "genders")
+    @JsonBackReference
+    private List<Game> games;
 
     // Constructors, getters, and setters
 }
+
