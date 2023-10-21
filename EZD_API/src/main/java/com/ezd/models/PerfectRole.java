@@ -2,6 +2,8 @@ package com.ezd.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,11 +13,14 @@ import lombok.Data;
 @Data
 @Entity
 public class PerfectRole {
-	  @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
-	    private String name; // Tên vị trí : "top", "mid", "bot", ...
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
 
-	    @ManyToMany(mappedBy = "roles")
-	    private List<Game> games; // Danh sách các trò chơi thuộc vị trí này
+    @ManyToMany(mappedBy = "roles")
+    @JsonBackReference
+    private List<Game> games;
+
+    // Constructors, getters, and setters
 }

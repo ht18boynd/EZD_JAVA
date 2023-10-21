@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+@CrossOrigin(origins = "http://localhost:3000")
 
 @RestController
 @RequestMapping("/api/levels")
@@ -29,18 +30,23 @@ public class LevelController {
     }
 
     @PostMapping("/add")
-    public Level createLevel(@RequestBody Level level) {
+    public Level createLevel(@RequestParam("name") String name) {
+    	Level level = new Level();
+    	level.setName(name);
         return levelRepository.save(level);
     }
 
     @PutMapping("/edit/{id}")
-    public Level updateLevel(@PathVariable Long id, @RequestBody Level level) {
-        if (levelRepository.existsById(id)) {
-            level.setId(id);
+    public Level updateLevel(@PathVariable Long id, @RequestParam("name") String name) {
+        Optional<Level> existingLevel = levelRepository.findById(id);
+        if (existingLevel.isPresent()) {
+            Level level = existingLevel.get();
+            level.setName(name);
             return levelRepository.save(level);
         }
         return null;
     }
+
 
     @DeleteMapping("/delete/{id}")
     public void deleteLevel(@PathVariable Long id) {
