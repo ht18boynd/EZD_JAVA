@@ -1,6 +1,7 @@
 package com.ezd.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +19,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Optional;
+
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+
 import com.ezd.models.Game;
+import com.ezd.models.LevelGame;
 import com.ezd.repository.GameService;
+
 @CrossOrigin(origins = "http://localhost:3000/")
 
 @RestController
@@ -34,6 +40,7 @@ public class GameController {
 
     @Autowired
     private Cloudinary cloudinary; // Inject Cloudinary bean
+    
     @GetMapping("")
     public List<Game> getAllServices() {
         return serviceRepository.findAll();
@@ -92,8 +99,9 @@ public class GameController {
             // Lưu trữ tệp hình ảnh lên Cloudinary và lấy public ID
             Map uploadResult = cloudinary.uploader().upload(imageName.getBytes(), ObjectUtils.emptyMap());
             String imageUrl = (String) uploadResult.get("url");
-
+            
             Game service = new Game();
+
             service.setNameGame(nameGame);
             service.setImageName(imageUrl); // Lưu trữ URL của hình ảnh
 
