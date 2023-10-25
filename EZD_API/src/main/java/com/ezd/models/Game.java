@@ -29,7 +29,7 @@ public class Game {
         inverseJoinColumns = @JoinColumn(name = "level_id")
     )
     @JsonManagedReference
-    private List<Level> levels;
+    private List<LevelGame> levels;
 
     @ManyToMany
     @JoinTable(

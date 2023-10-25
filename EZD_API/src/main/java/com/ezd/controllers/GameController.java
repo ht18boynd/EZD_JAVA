@@ -4,7 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ezd.models.Game;
 import com.ezd.models.Gender;
-import com.ezd.models.Level;
+import com.ezd.models.LevelGame;
 import com.ezd.models.PerfectRole;
 import com.ezd.repository.GameRepository;
 import com.ezd.repository.GenderRepository;
@@ -82,7 +82,7 @@ public class GameController {
                     game.setImageName(imageUrl);
                 }
 
-                List<Level> levels = (List<Level>) levelRepository.findAllById(levelIds);
+                List<LevelGame> levels = (List<LevelGame>) levelRepository.findAllById(levelIds);
                 game.setLevels(levels);
 
                 List<PerfectRole> roles = (List<PerfectRole>) perfectRoleRepository.findAllById(roleIds);
@@ -119,7 +119,7 @@ public class GameController {
             game.setNameGame(nameGame);
             game.setImageName(imageUrl);
 
-            List<Level> levels = (List<Level>) levelRepository.findAllById(levelIds);
+            List<LevelGame> levels = (List<LevelGame>) levelRepository.findAllById(levelIds);
             game.setLevels(levels);
 
             List<PerfectRole> roles = (List<PerfectRole>) perfectRoleRepository.findAllById(roleIds);

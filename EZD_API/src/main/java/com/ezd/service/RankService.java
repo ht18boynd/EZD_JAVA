@@ -20,6 +20,7 @@ public class RankService {
 	@Autowired
 	RankRepository rankRepository;
 
+	@Autowired
 	private CloudinaryService cloudinaryService;
 
 	List<String> allowExtensions = Arrays.asList("png", "gif", "jpg", "jpeg");
