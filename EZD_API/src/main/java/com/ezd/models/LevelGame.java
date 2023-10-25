@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToMany;
 import lombok.Data;
 @Data
 @Entity
-public class Level {
+public class LevelGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
