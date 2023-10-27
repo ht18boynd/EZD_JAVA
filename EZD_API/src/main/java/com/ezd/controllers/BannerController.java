@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/banners")
+@RequestMapping("/api/banners")
 public class BannerController {
 
     private final BannerRepository bannerRepository;
