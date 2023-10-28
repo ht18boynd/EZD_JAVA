@@ -21,64 +21,15 @@ public class Game {
     private Long id;
     private String nameGame;
     private String imageName;
-    
 
-    public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNameGame() {
-		return nameGame;
-	}
-
-	public void setNameGame(String nameGame) {
-		this.nameGame = nameGame;
-	}
-
-	public String getImageName() {
-		return imageName;
-	}
-
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
-	}
-
-	public List<Level> getLevels() {
-		return levels;
-	}
-
-	public void setLevels(List<Level> levels) {
-		this.levels = levels;
-	}
-
-	public List<PerfectRole> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<PerfectRole> roles) {
-		this.roles = roles;
-	}
-
-	public List<Gender> getGenders() {
-		return genders;
-	}
-
-	public void setGenders(List<Gender> genders) {
-		this.genders = genders;
-	}
-
-	@ManyToMany
+    @ManyToMany
     @JoinTable(
         name = "game_level",
         joinColumns = @JoinColumn(name = "game_id"),
         inverseJoinColumns = @JoinColumn(name = "level_id")
     )
     @JsonManagedReference
-    private List<LevelGame> levels;
+    private List<Level> levels;
 
     @ManyToMany
     @JoinTable(
