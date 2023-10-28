@@ -2,6 +2,7 @@ package com.ezd.controllers;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.ezd.Dto.BannerStatus;
 import com.ezd.models.Banner;
 import com.ezd.repository.BannerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class BannerController {
                 .map(banner -> new ResponseEntity<>(banner, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
+    
     @PostMapping("/add")
     public ResponseEntity<Banner> createBanner(@RequestParam("name") String name,
             @RequestParam("title") String title, @RequestParam("image") MultipartFile image) {
@@ -54,6 +55,7 @@ public class BannerController {
             banner.setName(name);
             banner.setTitle(title);
             banner.setImage(imageUrl);
+            banner.setStatus(BannerStatus.PENDING);
 
             Banner savedBanner = bannerRepository.save(banner);
             return new ResponseEntity<>(savedBanner, HttpStatus.CREATED);
@@ -100,4 +102,19 @@ public class BannerController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    
+    @PutMapping("/changeStatus/{id}")
+    public ResponseEntity<Banner> changeBannerStatus(@PathVariable Long id, @RequestParam("status") BannerStatus newStatus) {
+        Optional<Banner> optionalBanner = bannerRepository.findById(id);
+        if (optionalBanner.isPresent()) {
+            Banner banner = optionalBanner.get();
+            banner.setStatus(newStatus);
+
+            Banner updatedBanner = bannerRepository.save(banner);
+            return new ResponseEntity<>(updatedBanner, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

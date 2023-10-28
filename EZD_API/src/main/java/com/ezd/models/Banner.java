@@ -2,6 +2,8 @@ package com.ezd.models;
 
 
 
+import com.ezd.Dto.BannerStatus;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,7 @@ public class Banner {
     private String name;
     private String title;
     private String image;
+    private BannerStatus status;
 	public Long getId() {
 		return id;
 	}
@@ -41,17 +44,25 @@ public class Banner {
 	public void setImage(String image) {
 		this.image = image;
 	}
-	public Banner(Long id, String name, String title, String image) {
+	
+
+	public Banner(Long id, String name, String title, String image, BannerStatus status) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.title = title;
 		this.image = image;
+		this.status = status;
 	}
-
 	public Banner() {
 		// TODO Auto-generated constructor stub
 	}
     // Constructors, getters, and setters
+	public BannerStatus getStatus() {
+		return status;
+	}
+	public void setStatus(BannerStatus status) {
+		this.status = status;
+	}
 	
 }
