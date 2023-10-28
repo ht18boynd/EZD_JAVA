@@ -4,7 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ezd.models.Game;
 import com.ezd.models.Gender;
-import com.ezd.models.Level;
+import com.ezd.models.LevelGame;
 import com.ezd.models.PerfectRole;
 import com.ezd.repository.GameRepository;
 import com.ezd.repository.GenderRepository;
@@ -66,42 +66,6 @@ public class GameController {
         }
     }
 
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<Game> editGame(@PathVariable Long id, @RequestParam("nameGame") String nameGame,
-            @RequestParam("imageName") MultipartFile imageName, @RequestParam("levelIds") List<Long> levelIds,
-            @RequestParam("roleIds") List<Long> roleIds, @RequestParam("genderIds") List<Long> genderIds) {
-        Optional<Game> optionalGame = gameRepository.findById(id);
-        if (optionalGame.isPresent()) {
-            Game game = optionalGame.get();
-            game.setNameGame(nameGame);
-
-            try {
-                if (imageName != null) {
-                    Map uploadResult = cloudinary.uploader().upload(imageName.getBytes(), ObjectUtils.emptyMap());
-                    String imageUrl = (String) uploadResult.get("url");
-                    game.setImageName(imageUrl);
-                }
-
-                List<Level> levels = (List<Level>) levelRepository.findAllById(levelIds);
-                game.setLevels(levels);
-
-                List<PerfectRole> roles = (List<PerfectRole>) perfectRoleRepository.findAllById(roleIds);
-                game.setRoles(roles);
-
-                List<Gender> genders = (List<Gender>) genderGameRepository.findAllById(genderIds);
-                game.setGenders(genders);
-
-                Game updatedGame = gameRepository.save(game);
-                return new ResponseEntity<>(updatedGame, HttpStatus.OK);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
     @PostMapping("/add")
     public ResponseEntity<Game> createGame(@RequestParam("nameGame") String nameGame,
             @RequestParam("imageName") MultipartFile imageName, @RequestParam("levelIds") List<Long> levelIds,
@@ -119,7 +83,7 @@ public class GameController {
             game.setNameGame(nameGame);
             game.setImageName(imageUrl);
 
-            List<Level> levels = (List<Level>) levelRepository.findAllById(levelIds);
+            List<LevelGame> levels = (List<LevelGame>) levelRepository.findAllById(levelIds);
             game.setLevels(levels);
 
             List<PerfectRole> roles = (List<PerfectRole>) perfectRoleRepository.findAllById(roleIds);
@@ -135,5 +99,86 @@ public class GameController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/edit/{id}/name")
+    public ResponseEntity<Game> updateGameName(@PathVariable Long id, @RequestParam("nameGame") String nameGame) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+            game.setNameGame(nameGame);
+            Game updatedGame = gameRepository.save(game);
+            return new ResponseEntity<>(updatedGame, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/edit/{id}/image")
+    public ResponseEntity<Game> updateGameImage(@PathVariable Long id, @RequestParam("imageName") MultipartFile imageName) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+            try {
+                if (imageName != null) {
+                    Map uploadResult = cloudinary.uploader().upload(imageName.getBytes(), ObjectUtils.emptyMap());
+                    String imageUrl = (String) uploadResult.get("url");
+                    game.setImageName(imageUrl);
+                }
+                Game updatedGame = gameRepository.save(game);
+                return new ResponseEntity<>(updatedGame, HttpStatus.OK);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }  
+    
+    @PutMapping("/edit/{id}/roles")
+    public ResponseEntity<Game> updateGameRoles(@PathVariable Long id, @RequestParam("roleIds") List<Long> roleIds) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+            List<PerfectRole> roles = (List<PerfectRole>) perfectRoleRepository.findAllById(roleIds);
+            game.setRoles(roles);
+            Game updatedGame = gameRepository.save(game);
+            return new ResponseEntity<>(updatedGame, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Chỉnh sửa giới tính của trò chơi
+    @PutMapping("/edit/{id}/genders")
+    public ResponseEntity<Game> updateGameGenders(@PathVariable Long id, @RequestParam("genderIds") List<Long> genderIds) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+            List<Gender> genders = (List<Gender>) genderGameRepository.findAllById(genderIds);
+            game.setGenders(genders);
+            Game updatedGame = gameRepository.save(game);
+            return new ResponseEntity<>(updatedGame, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Chỉnh sửa level của trò chơi
+    @PutMapping("/edit/{id}/levels")
+    public ResponseEntity<Game> updateGameLevels(@PathVariable Long id,@RequestParam("levelIds") List<Long> levelIds) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+            List<LevelGame> levels = (List<LevelGame>) levelRepository.findAllById(levelIds);
+            game.setLevels(levels);
+            Game updatedGame = gameRepository.save(game);
+            return new ResponseEntity<>(updatedGame, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+   
 }
 

@@ -13,13 +13,37 @@ import jakarta.persistence.ManyToMany;
 import lombok.Data;
 @Data
 @Entity
-public class Level {
+public class LevelGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
-    @ManyToMany(mappedBy = "levels")
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Game> getGames() {
+		return games;
+	}
+
+	public void setGames(List<Game> games) {
+		this.games = games;
+	}
+
+	@ManyToMany(mappedBy = "levels")
     @JsonBackReference
     private List<Game> games;
 

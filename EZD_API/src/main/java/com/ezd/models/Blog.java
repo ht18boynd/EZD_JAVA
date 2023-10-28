@@ -1,50 +1,53 @@
 package com.ezd.models;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import lombok.Data;
+
 @Data
 @Entity
-public class PerfectRole {
+public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
-    public Long getId() {
+    private String title;
+    private String content;
+    private String image;
+	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public List<Game> getGames() {
-		return games;
+	public String getTitle() {
+		return title;
 	}
-
-	public void setGames(List<Game> games) {
-		this.games = games;
+	public void setTitle(String title) {
+		this.title = title;
 	}
-
-	@ManyToMany(mappedBy = "roles")
-    @JsonBackReference
-    private List<Game> games;
-
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+public Blog() {
+	// TODO Auto-generated constructor stub
+}
     // Constructors, getters, and setters
 }
