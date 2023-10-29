@@ -47,11 +47,11 @@ public class Game {
 		this.imageName = imageName;
 	}
 
-	public List<Level> getLevels() {
+	public List<LevelGame> getLevels() {
 		return levels;
 	}
 
-	public void setLevels(List<Level> levels) {
+	public void setLevels(List<LevelGame> levels) {
 		this.levels = levels;
 	}
 
