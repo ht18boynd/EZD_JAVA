@@ -19,7 +19,6 @@ import com.ezd.repository.RankRepository;
 public class RankService {
 	@Autowired
 	RankRepository rankRepository;
-	
 	@Autowired
 	private CloudinaryService cloudinaryService;
 

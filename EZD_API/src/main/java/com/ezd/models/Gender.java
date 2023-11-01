@@ -1,19 +1,21 @@
 package com.ezd.models;
 
-import java.util.List;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.Data;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Data
 @Entity
-public class LevelGame {
+public class Gender {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,9 +45,10 @@ public class LevelGame {
 		this.games = games;
 	}
 
-	@ManyToMany(mappedBy = "levels")
+	@ManyToMany(mappedBy = "genders")
     @JsonBackReference
     private List<Game> games;
 
     // Constructors, getters, and setters
 }
+

@@ -1,7 +1,6 @@
 package com.ezd.models;
 
 import java.util.List;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -13,7 +12,7 @@ import jakarta.persistence.ManyToMany;
 import lombok.Data;
 @Data
 @Entity
-public class LevelGame {
+public class PerfectRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +42,7 @@ public class LevelGame {
 		this.games = games;
 	}
 
-	@ManyToMany(mappedBy = "levels")
+	@ManyToMany(mappedBy = "roles")
     @JsonBackReference
     private List<Game> games;
 
