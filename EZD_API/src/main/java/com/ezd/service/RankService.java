@@ -19,7 +19,8 @@ import com.ezd.repository.RankRepository;
 public class RankService {
 	@Autowired
 	RankRepository rankRepository;
-
+	
+	@Autowired
 	private CloudinaryService cloudinaryService;
 
 	List<String> allowExtensions = Arrays.asList("png", "gif", "jpg", "jpeg");
@@ -57,12 +58,20 @@ public class RankService {
 		}
 
 		BigDecimal minimumBalance = rank.getMinimum_balance();
-		if (minimumBalance.compareTo(BigDecimal.ZERO) < 0 || minimumBalance == null) {
+		if (minimumBalance.compareTo(BigDecimal.ZERO) <= 0 || minimumBalance == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"minimumBalance không thể nhỏ hơn 0, hoặc không được null");
+					"Không được null");
 		}
 		rank.setMinimum_balance(minimumBalance);
-
+		
+		BigDecimal maximumBalance = rank.getMaximum_balance();
+		if (minimumBalance.compareTo(BigDecimal.ZERO) < 0 || minimumBalance == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"maximumBalance không thể nhỏ hơn 0, hoặc không được null");
+		}
+		rank.setMaximum_balance(maximumBalance);
+		
+		rank.setMinimum_balance(minimumBalance);
 		if (!isValidateImageFile(adminFrameImage, allowExtensions)
 				|| !isValidateImageFile(backgroundImage, allowExtensions)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -100,12 +109,15 @@ public class RankService {
 		} else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minimumBalance không hợp lệ");
 		}
-
-		// Kiểm tra điều kiện đuôi file cho phép
-		if (updatedRank.getAvatar_frame_image() == null && updatedRank.getBackground_image() == null) {
-			throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Không có dữ liệu tải lên");
+		
+		BigDecimal maximumBalance = updatedRank.getMaximum_balance();
+		if (minimumBalance.compareTo(BigDecimal.ZERO) < 0 || minimumBalance == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"maximumBalance không thể nhỏ hơn 0, hoặc không được null");
 		}
-
+		existingRank.setMaximum_balance(maximumBalance);
+		
+		// Kiểm tra điều kiện đuôi file cho phép
 		if (!isValidateImageFile(adminFrameImage, allowExtensions)
 				|| !isValidateImageFile(backgroundImage, allowExtensions)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
