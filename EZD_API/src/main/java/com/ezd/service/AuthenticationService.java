@@ -18,6 +18,7 @@ public interface AuthenticationService extends JpaRepository<Auth, Long> {
     
     Auth signup(SignUpRequest signUpRequest);
     JwtAuthenticationResponse signin(SignInRequest signInRequest);
+    JwtAuthenticationResponse signinAdmin(SignInRequest signInRequest);
 
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 }

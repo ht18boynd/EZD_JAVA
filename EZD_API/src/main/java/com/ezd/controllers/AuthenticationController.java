@@ -41,6 +41,10 @@ public class AuthenticationController {
     public  ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SignInRequest signInRequest) {
         return  ResponseEntity.ok(authenticationService.signin(signInRequest));
     }
+    @PostMapping("/signinAdmin")
+    public  ResponseEntity<JwtAuthenticationResponse> signinAdmin(@RequestBody SignInRequest signInRequest) {
+        return  ResponseEntity.ok(authenticationService.signinAdmin(signInRequest));
+    }
 
     @PostMapping("/refresh")
     public  ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {

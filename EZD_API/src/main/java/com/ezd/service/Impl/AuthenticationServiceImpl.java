@@ -67,6 +67,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
         return jwtAuthenticationResponse;
     }
+    public JwtAuthenticationResponse signinAdmin(SignInRequest signInRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
+
+        var user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid Email and PassWord"));
+        if (user.getRole() == Role.ADMIN) {
+            var jwt = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+
+            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+
+            jwtAuthenticationResponse.setToken(jwt);
+            jwtAuthenticationResponse.setRefreshToken(refreshToken);
+            return jwtAuthenticationResponse;
+        } else {
+            throw new IllegalArgumentException("User is not an ADMIN");
+        }
+    }
+
 
     public  JwtAuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) {
         String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
@@ -83,7 +101,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return  null;
     }
-	@Override
+	
+   
+    @Override
 	public void flush() {
 		// TODO Auto-generated method stub
 		
