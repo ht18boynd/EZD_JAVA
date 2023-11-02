@@ -27,7 +27,7 @@ public class EzdApiApplication implements CommandLineRunner {
 		if(null == adminAccount) {
 			Auth auth = new Auth();
 
-			auth.setEmail("admin@gamil.com");
+			auth.setEmail("admin@gmail.com");
 			auth.setRole(Role.ADMIN);
 			auth.setPassword(new BCryptPasswordEncoder().encode("admin123"));
 			userRepository.save(auth);
