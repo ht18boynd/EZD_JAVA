@@ -1,7 +1,7 @@
 package com.ezd;
 
+import com.ezd.Dto.Role;
 import com.ezd.models.Auth;
-import com.ezd.models.Role;
 import com.ezd.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

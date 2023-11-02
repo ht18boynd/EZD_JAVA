@@ -1,11 +1,11 @@
 package com.ezd.Dto;
 
 
-import com.ezd.models.Role;
 import com.ezd.models.Status;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class SignUpRequest {
@@ -20,4 +20,6 @@ public class SignUpRequest {
     private BigDecimal balance;
     private Status status;
     private Role role;
+    private LocalDateTime birthDay;
+    private LocalDateTime createdDate;
 }

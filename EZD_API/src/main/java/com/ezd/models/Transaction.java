@@ -5,32 +5,40 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import com.ezd.Dto.TransactionStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Transaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+    @JsonManagedReference
 
     @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "id")
-    private Auth user; // Liên kết với thông tin người dùng
+    @JoinColumn(name = "user_transaction_id", referencedColumnName = "id")
+    private Auth user_transaction; // Tham chiếu đến người dùng
 
-    private BigDecimal amount;
-    private String currency;
-    private Date timestamp;
+	private BigDecimal amount;
+	private LocalDateTime transactionTime;
+    private TransactionStatus status;
+    
+    private boolean checkedByAdmin;
+    private LocalDateTime adminCheckTime;
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Auth getUser() {
-		return user;
+	public Auth getUser_transaction() {
+		return user_transaction;
 	}
-	public void setUser(Auth user) {
-		this.user = user;
+	public void setUser_transaction(Auth user_transaction) {
+		this.user_transaction = user_transaction;
 	}
 	public BigDecimal getAmount() {
 		return amount;
@@ -38,29 +46,43 @@ public class Transaction {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	public String getCurrency() {
-		return currency;
+	public LocalDateTime getTransactionTime() {
+		return transactionTime;
 	}
-	public void setCurrency(String currency) {
-		this.currency = currency;
+	public void setTransactionTime(LocalDateTime transactionTime) {
+		this.transactionTime = transactionTime;
 	}
-	public Date getTimestamp() {
-		return timestamp;
+	public TransactionStatus getStatus() {
+		return status;
 	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
-	}public Transaction() {
-		// TODO Auto-generated constructor stub
+	public void setStatus(TransactionStatus status) {
+		this.status = status;
 	}
-	public Transaction(Long id, Auth user, BigDecimal amount, String currency, Date timestamp) {
+	public boolean isCheckedByAdmin() {
+		return checkedByAdmin;
+	}
+	public void setCheckedByAdmin(boolean checkedByAdmin) {
+		this.checkedByAdmin = checkedByAdmin;
+	}
+	public LocalDateTime getAdminCheckTime() {
+		return adminCheckTime;
+	}
+	public void setAdminCheckTime(LocalDateTime adminCheckTime) {
+		this.adminCheckTime = adminCheckTime;
+	}
+	public Transaction(Long id, Auth user_transaction, BigDecimal amount, LocalDateTime transactionTime,
+			TransactionStatus status, boolean checkedByAdmin, LocalDateTime adminCheckTime) {
 		super();
 		this.id = id;
-		this.user = user;
+		this.user_transaction = user_transaction;
 		this.amount = amount;
-		this.currency = currency;
-		this.timestamp = timestamp;
+		this.transactionTime = transactionTime;
+		this.status = status;
+		this.checkedByAdmin = checkedByAdmin;
+		this.adminCheckTime = adminCheckTime;
 	}
 
-
-    // Các getter và setter
+	public Transaction() {
+		// TODO Auto-generated constructor stub
+	}
 }
