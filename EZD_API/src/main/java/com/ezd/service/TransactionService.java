@@ -61,4 +61,9 @@ public class TransactionService {
         }
     
 }
+
+    public List<Transaction> getTransactionsByStatus(TransactionStatus status) {
+        return transactionRepository.findByStatus(status);
+    }
+
 }

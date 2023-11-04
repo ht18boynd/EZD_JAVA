@@ -2,8 +2,10 @@ package com.ezd.controllers;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,4 +50,9 @@ public class TransactionController {
 			@RequestParam("newStatus") TransactionStatus newStatus) {
 		transactionService.adminCheckTransaction(transactionId, newStatus);
 	}
+	
+	@GetMapping("/byStatus")
+    public List<Transaction> getTransactionsByStatus(@RequestParam("status") TransactionStatus status) {
+        return transactionService.getTransactionsByStatus(status);
+    }
 }

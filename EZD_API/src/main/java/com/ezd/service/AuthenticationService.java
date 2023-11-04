@@ -1,5 +1,6 @@
 package com.ezd.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.ezd.Dto.JwtAuthenticationResponse;
 import com.ezd.Dto.RefreshTokenRequest;
+import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
@@ -20,5 +22,8 @@ public interface AuthenticationService extends JpaRepository<Auth, Long> {
     JwtAuthenticationResponse signin(SignInRequest signInRequest);
     JwtAuthenticationResponse signinAdmin(SignInRequest signInRequest);
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+    
+
+
 }
 	

@@ -73,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
 
         var user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid Email and PassWord"));
-        if (user.getRole() == Role.ADMIN) {
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.STAF ) {
             var jwt = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
@@ -103,6 +103,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return  null;
     }
+
+
 	
    
     @Override
@@ -256,3 +258,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return null;
 	}
 }
+

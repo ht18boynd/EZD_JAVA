@@ -3,14 +3,18 @@ package com.ezd.controllers;
 
 import com.ezd.Dto.JwtAuthenticationResponse;
 import com.ezd.Dto.RefreshTokenRequest;
+import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
+import com.ezd.Dto.TransactionStatus;
 import com.ezd.models.Auth;
 import com.ezd.models.Game;
+import com.ezd.models.Transaction;
 import com.ezd.repository.AuthRepository;
 import com.ezd.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
 	@Autowired 
-	private AuthRepository authRepository;
+	private final  AuthRepository authRepository;
     private  final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
@@ -59,6 +63,10 @@ public class AuthenticationController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("/")
+    public List<Auth> getAllUser(@RequestParam("role") Role role) {
+        return  authRepository.getAllUsersList(role);
     }
   
 }
