@@ -1,5 +1,7 @@
 package com.ezd;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -13,20 +15,17 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000/"); // Đặt origin của ứng dụng React của bạn ở đây
 
-        config.addAllowedOrigin("http://localhost:3001/"); // Đặt origin của ứng dụng React của bạn ở đây
-
-
+        // Xác định chính xác URL của ứng dụng React của bạn (loại bỏ dấu gạch cuối cùng)
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:3001");
+        
         config.addAllowedHeader("*");
-        config.addAllowedMethod("OPTIONS");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
+        
+        // Sử dụng setAllowedMethods để xác định danh sách các phương thức được phép
+        config.setAllowedMethods(Arrays.asList("OPTIONS", "GET", "POST", "PUT", "DELETE"));
+
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-   
-  
 }

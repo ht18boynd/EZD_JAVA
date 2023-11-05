@@ -3,10 +3,10 @@ package com.ezd.service.Impl;
 
 import com.ezd.Dto.JwtAuthenticationResponse;
 import com.ezd.Dto.RefreshTokenRequest;
+import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
-import com.ezd.models.Role;
 import com.ezd.models.Status;
 import com.ezd.repository.AuthRepository;
 import com.ezd.service.AuthenticationService;
@@ -51,6 +51,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setBalance(BigDecimal.ZERO);
         user.setStatus(Status.ON);
         user.setRole(Role.USER);
+        user.setBirthDay(signUpRequest.getBirthDay());
+        user.setCreatedDate(signUpRequest.getCreatedDate());
 
         return userRepository.save(user);
     }
@@ -71,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
 
         var user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid Email and PassWord"));
-        if (user.getRole() == Role.ADMIN) {
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.STAF ) {
             var jwt = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
@@ -101,6 +103,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return  null;
     }
+
+
 	
    
     @Override
@@ -254,3 +258,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return null;
 	}
 }
+

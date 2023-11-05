@@ -1,7 +1,7 @@
 package com.ezd;
 
+import com.ezd.Dto.Role;
 import com.ezd.models.Auth;
-import com.ezd.models.Role;
 import com.ezd.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -27,9 +27,9 @@ public class EzdApiApplication implements CommandLineRunner {
 		if(null == adminAccount) {
 			Auth auth = new Auth();
 
-			auth.setEmail("admin@gmail.com");
+			auth.setEmail("viet1998@gmail.com");
 			auth.setRole(Role.ADMIN);
-			auth.setPassword(new BCryptPasswordEncoder().encode("admin123"));
+			auth.setPassword(new BCryptPasswordEncoder().encode("viet1998"));
 			userRepository.save(auth);
 		}
 	}

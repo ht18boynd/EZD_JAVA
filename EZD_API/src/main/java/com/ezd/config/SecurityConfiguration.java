@@ -1,6 +1,6 @@
 package com.ezd.config;
 
-import com.ezd.models.Role;
+
 import com.ezd.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
