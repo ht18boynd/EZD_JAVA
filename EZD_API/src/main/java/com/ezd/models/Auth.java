@@ -27,14 +27,12 @@ public class Auth implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private String accountName;
     private String email;
     private String password;
     private String avatar;
     private String address;
     private String country;
     private String phoneNumber;
-   
     private String gender;
     private BigDecimal balance;
     private Status status;
