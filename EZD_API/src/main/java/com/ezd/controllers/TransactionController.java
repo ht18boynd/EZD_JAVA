@@ -33,7 +33,7 @@ public class TransactionController {
 		
 		// Đặt thông tin người dùng vào giao dịch
 		Auth user = new Auth();
-		user.setRole(Role.USER); // Đây là ví dụ, bạn cần thiết lập giá trị thích hợp
+		user.setRole(Role.USER);
 
 		user.setId(userId);
 		transaction.setUser_transaction(user);
