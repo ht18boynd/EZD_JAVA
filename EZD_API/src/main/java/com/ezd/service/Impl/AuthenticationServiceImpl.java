@@ -68,6 +68,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		var user = userRepository.findByEmail(signInRequest.getEmail())
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Email and PassWord"));
+		
+		if (user.getRole() == Role.USER || user.getRole() == Role.STAF) {
 		var jwt = jwtService.generateToken(user);
 		var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
@@ -76,6 +78,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		jwtAuthenticationResponse.setToken(jwt);
 		jwtAuthenticationResponse.setRefreshToken(refreshToken);
 		return jwtAuthenticationResponse;
+		} else {
+			throw new IllegalArgumentException("Not is User or STAF");
+		}
 	}
 
 	public JwtAuthenticationResponse signinAdmin(SignInRequest signInRequest) {
@@ -94,7 +99,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			jwtAuthenticationResponse.setRefreshToken(refreshToken);
 			return jwtAuthenticationResponse;
 		} else {
-			throw new IllegalArgumentException("User is not an ADMIN");
+			throw new IllegalArgumentException("User is not an ADMIN or STAF");
 		}
 	}
 

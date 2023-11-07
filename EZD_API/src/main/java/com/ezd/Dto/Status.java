@@ -1,6 +1,7 @@
 package com.ezd.Dto;
 
-public enum TransactionStatus {
+public enum Status
+{
 
 	FAILED, PENDING, SUCCESS
 }

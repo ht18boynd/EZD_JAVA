@@ -45,10 +45,15 @@ public class Auth implements UserDetails {
     @OneToMany(mappedBy = "user_transaction")
     private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
+    
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_become")
+    private List<BecomeIdol> becomes ;
+
     @JsonBackReference
 
     @OneToMany(mappedBy = "user_lucky")
-    private List<LuckySpin> luckys; // Thêm danh sách  mà người dùng được cộng điểm
+    private List<LuckySpin> luckys; //
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

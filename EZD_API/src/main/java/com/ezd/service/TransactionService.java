@@ -1,6 +1,6 @@
 package com.ezd.service;
 
-import com.ezd.Dto.TransactionStatus;
+import com.ezd.Dto.Status;
 import com.ezd.models.Auth;
 import com.ezd.models.Transaction;
 import com.ezd.repository.AuthRepository;
@@ -35,12 +35,12 @@ public class TransactionService {
     }
 
     @Transactional
-    public void adminCheckTransaction(Long transactionId, TransactionStatus newStatus) {
+    public void adminCheckTransaction(Long transactionId, Status newStatus) {
         Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
 
         if (transaction != null && !transaction.isCheckedByAdmin()) {
             // Kiểm tra trạng thái mới
-            if (newStatus == TransactionStatus.SUCCESS || newStatus == TransactionStatus.FAILED) {
+            if (newStatus == Status.SUCCESS || newStatus == Status.FAILED) {
                 // Cập nhật trạng thái giao dịch
                 transaction.setStatus(newStatus);
                 transaction.setCheckedByAdmin(true);
@@ -48,7 +48,7 @@ public class TransactionService {
                 transactionRepository.save(transaction);
 
                 // Nếu là "SUCCESS", cộng số tiền vào tài khoản của người dùng
-                if (newStatus == TransactionStatus.SUCCESS) {
+                if (newStatus == Status.SUCCESS) {
                     Auth user = transaction.getUser_transaction();
                     BigDecimal currentBalance = user.getBalance();
                     BigDecimal transactionAmount = transaction.getAmount();
@@ -62,7 +62,7 @@ public class TransactionService {
     
 }
 
-    public List<Transaction> getTransactionsByStatus(TransactionStatus status) {
+    public List<Transaction> getTransactionsByStatus(Status status) {
         return transactionRepository.findByStatus(status);
     }
 

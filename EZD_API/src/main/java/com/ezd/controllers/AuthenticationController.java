@@ -6,7 +6,6 @@ import com.ezd.Dto.RefreshTokenRequest;
 import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
-import com.ezd.Dto.TransactionStatus;
 import com.ezd.models.Auth;
 import com.ezd.models.Game;
 import com.ezd.models.Transaction;
