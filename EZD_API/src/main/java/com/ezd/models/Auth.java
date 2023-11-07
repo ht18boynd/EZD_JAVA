@@ -27,14 +27,12 @@ public class Auth implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private String accountName;
     private String email;
     private String password;
     private String avatar;
     private String address;
     private String country;
     private String phoneNumber;
-   
     private String gender;
     private BigDecimal balance;
     private Status status;
@@ -47,10 +45,15 @@ public class Auth implements UserDetails {
     @OneToMany(mappedBy = "user_transaction")
     private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
+    
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_become")
+    private List<BecomeIdol> becomes ;
+
     @JsonBackReference
 
     @OneToMany(mappedBy = "user_lucky")
-    private List<LuckySpin> luckys; // Thêm danh sách  mà người dùng được cộng điểm
+    private List<LuckySpin> luckys; //
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
