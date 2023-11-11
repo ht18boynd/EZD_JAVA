@@ -1,5 +1,7 @@
 package com.ezd.controllers;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +22,12 @@ public class MailController {
 	private MailService mailService;
 	@PostMapping("/send/{mail}")
 	public String sendMail (@PathVariable String mail , @RequestBody DataMailDTO mailStructure) throws MessagingException {
-		mailService.sendHtmlMail(mailStructure, mail);
+		try {
+			mailService.sendHtmlMail(mailStructure, mail, null);
+		} catch (MessagingException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "Success";
 		
 	}

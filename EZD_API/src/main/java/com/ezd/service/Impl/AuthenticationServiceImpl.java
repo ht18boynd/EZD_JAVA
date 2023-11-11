@@ -49,8 +49,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-    private final SpringTemplateEngine templateEngine; // Tiêm SpringTemplateEngine vào đây
-
+   
+	 @Autowired
+	    private SpringTemplateEngine templateEngine; 
 
 	 public Auth signup(SignUpRequest signUpRequest) {
 	        Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
@@ -80,34 +81,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	        mailStructure.setSubject("Xác Nhận Đăng Ký Tài Khoản Thành Công");
 	        mailStructure.setContent(htmlContent);
 
-	        mailService.sendHtmlMail(mailStructure, signUpRequest.getEmail());
+	        try {
+				mailService.sendHtmlMail(mailStructure, signUpRequest.getEmail(), null);
+			} catch (MessagingException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 	        return userRepository.save(user);
 	    }
 
 	    private String generateHtmlContent(String templateName, Map<String, Object> model) {
 	        // Sử dụng templateEngine để xử lý template
-	        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-	        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
-
-	        // Thay đổi cách lấy templateEngine từ context
 	        Context context = new Context();
 	        context.setVariables(model);
 	        return templateEngine.process(templateName, context);
 	    }
-
-	    private ClassLoaderTemplateResolver thymeleafTemplateResolver() {
-	        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-	        templateResolver.setPrefix("templates/");
-	        templateResolver.setSuffix(".html");
-	        templateResolver.setTemplateMode("HTML");
-	        templateResolver.setCharacterEncoding("UTF-8");
-	        return templateResolver;
-	    }
-
-
-
-
 
 	
 	public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
