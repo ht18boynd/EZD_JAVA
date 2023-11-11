@@ -35,7 +35,8 @@ public class Auth implements UserDetails {
     private String phoneNumber;
     private String gender;
     private BigDecimal balance;
-    private Status status;
+    private StatusAccount status;
+    
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private Role role;
     private LocalDateTime birthDay;
@@ -47,6 +48,12 @@ public class Auth implements UserDetails {
 
     
     @JsonBackReference
+
+    @OneToMany(mappedBy = "user_game")
+    private List<Product> products; // Thêm danh sách giao dịch mà người dùng đã thực hiện
+
+    
+    @JsonBackReference
     @OneToMany(mappedBy = "user_become")
     private List<BecomeIdol> becomes ;
 
@@ -54,6 +61,8 @@ public class Auth implements UserDetails {
 
     @OneToMany(mappedBy = "user_lucky")
     private List<LuckySpin> luckys; //
+    
+   
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

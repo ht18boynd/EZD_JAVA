@@ -1,6 +1,6 @@
 package com.ezd.models;
 
-public enum Status {
+public enum StatusAccount {
     ON,
     OFF
 }

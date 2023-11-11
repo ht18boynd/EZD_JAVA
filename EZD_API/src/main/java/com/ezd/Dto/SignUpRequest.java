@@ -1,7 +1,7 @@
 package com.ezd.Dto;
 
 
-import com.ezd.models.Status;
+import com.ezd.models.StatusAccount;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Data
 public class SignUpRequest {
     private String name;
-    private String accountName;
     private String email;
     private String password;
     private String address;
@@ -18,7 +17,7 @@ public class SignUpRequest {
     private String phoneNumber;
     private String gender;
     private BigDecimal balance;
-    private Status status;
+    private StatusAccount status;
     private Role role;
     private LocalDateTime birthDay;
     private LocalDateTime createdDate;
