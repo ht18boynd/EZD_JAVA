@@ -7,17 +7,16 @@ import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
-import com.ezd.models.Game;
-import com.ezd.models.Transaction;
 import com.ezd.repository.AuthRepository;
 import com.ezd.service.AuthenticationService;
+
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +35,7 @@ public class AuthenticationController {
     private  final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Auth> signup(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<Auth> signup(@RequestBody SignUpRequest signUpRequest) throws MessagingException  {
         return  ResponseEntity.ok(authenticationService.signup(signUpRequest));
     }
 

@@ -45,6 +45,10 @@ public class PerfectRole {
 	@ManyToMany(mappedBy = "roles")
     @JsonBackReference
     private List<Game> games;
+	
+	@ManyToMany(mappedBy = "role")
+    @JsonBackReference
+    private List<Product> products;
 
     // Constructors, getters, and setters
 }

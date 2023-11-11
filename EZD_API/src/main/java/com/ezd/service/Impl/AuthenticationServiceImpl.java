@@ -1,17 +1,22 @@
 package com.ezd.service.Impl;
 
+import com.ezd.Dto.DataMailDTO;
 import com.ezd.Dto.JwtAuthenticationResponse;
 import com.ezd.Dto.RefreshTokenRequest;
 import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
-import com.ezd.models.Status;
+import com.ezd.models.StatusAccount;
 import com.ezd.repository.AuthRepository;
 import com.ezd.service.AuthenticationService;
 import com.ezd.service.JwtService;
+import com.ezd.service.MailService;
+
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,47 +26,90 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver; // Chỉnh sửa import
+import org.thymeleaf.context.Context;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+	@Autowired
+    private MailService mailService;
+
 	private final AuthRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
+    private final SpringTemplateEngine templateEngine; // Tiêm SpringTemplateEngine vào đây
 
-	public Auth signup(SignUpRequest signUpRequest)   {
-		Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
-		if (existingUser.isPresent()) {
-			// Nếu email đã tồn tại, bạn có thể xử lý lỗi hoặc ném một ngoại lệ.
-	        throw new RuntimeException("Email đã tồn tại.");
 
-		}
-		Auth user = new Auth();
-		user.setAvatar(null);
-		user.setName(signUpRequest.getName());
-		user.setEmail(signUpRequest.getEmail());
-		user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-		user.setAddress(signUpRequest.getAddress());
-		user.setCountry(signUpRequest.getCountry());
-		user.setPhoneNumber(signUpRequest.getPhoneNumber());
-		user.setGender(signUpRequest.getGender());
-		user.setBalance(BigDecimal.ZERO);
-		user.setStatus(Status.ON);
-		user.setRole(Role.USER);
-		user.setBirthDay(signUpRequest.getBirthDay());
-		user.setCreatedDate(LocalDateTime.now());
+	 public Auth signup(SignUpRequest signUpRequest) {
+	        Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
+	        if (existingUser.isPresent()) {
+	            throw new RuntimeException("Email đã tồn tại.");
+	        }
 
-		return userRepository.save(user);
-	}
+	        Auth user = new Auth();
+	        user.setAvatar(null);
+	        user.setName(signUpRequest.getName());
+	        user.setEmail(signUpRequest.getEmail());
+	        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+	        user.setAddress(signUpRequest.getAddress());
+	        user.setCountry(null);
+	        user.setPhoneNumber(signUpRequest.getPhoneNumber());
+	        user.setGender(null);
+	        user.setBalance(BigDecimal.ZERO);
+	        user.setStatus(StatusAccount.ON);
+	        user.setRole(Role.USER);
+	        user.setBirthDay(signUpRequest.getBirthDay());
+	        user.setCreatedDate(LocalDateTime.now());
 
+	        // Thay đổi cách gọi phương thức generateHtmlContent
+	        String htmlContent = generateHtmlContent("email-template", Map.of("email", signUpRequest.getEmail(), "password", signUpRequest.getPassword()));
+
+	        DataMailDTO mailStructure = new DataMailDTO();
+	        mailStructure.setSubject("Xác Nhận Đăng Ký Tài Khoản Thành Công");
+	        mailStructure.setContent(htmlContent);
+
+	        mailService.sendHtmlMail(mailStructure, signUpRequest.getEmail());
+
+	        return userRepository.save(user);
+	    }
+
+	    private String generateHtmlContent(String templateName, Map<String, Object> model) {
+	        // Sử dụng templateEngine để xử lý template
+	        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+	        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
+
+	        // Thay đổi cách lấy templateEngine từ context
+	        Context context = new Context();
+	        context.setVariables(model);
+	        return templateEngine.process(templateName, context);
+	    }
+
+	    private ClassLoaderTemplateResolver thymeleafTemplateResolver() {
+	        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+	        templateResolver.setPrefix("templates/");
+	        templateResolver.setSuffix(".html");
+	        templateResolver.setTemplateMode("HTML");
+	        templateResolver.setCharacterEncoding("UTF-8");
+	        return templateResolver;
+	    }
+
+
+
+
+
+	
 	public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));

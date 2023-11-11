@@ -1,5 +1,6 @@
 package com.ezd.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,10 +16,13 @@ import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
 import com.ezd.repository.AuthRepository;
 
+import jakarta.mail.MessagingException;
+
+
 public interface AuthenticationService extends JpaRepository<Auth, Long> {
 	
     
-    Auth signup(SignUpRequest signUpRequest);
+    Auth signup(SignUpRequest signUpRequest) throws MessagingException ;
     JwtAuthenticationResponse signin(SignInRequest signInRequest);
     JwtAuthenticationResponse signinAdmin(SignInRequest signInRequest);
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
