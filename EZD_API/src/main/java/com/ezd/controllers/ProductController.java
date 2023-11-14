@@ -1,23 +1,7 @@
 package com.ezd.controllers;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.ezd.models.Auth;
 import com.ezd.models.Game;
 import com.ezd.models.Gender;
@@ -25,107 +9,162 @@ import com.ezd.models.LevelGame;
 import com.ezd.models.PerfectRole;
 import com.ezd.models.Product;
 import com.ezd.models.StatusAccount;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.ezd.repository.AuthRepository;
 import com.ezd.repository.GameRepository;
 import com.ezd.repository.GenderRepository;
 import com.ezd.repository.LevelRepository;
 import com.ezd.repository.PerfectRoleRepository;
 import com.ezd.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
-	@Autowired
-	private ProductRepository productRepository;
-	@Autowired
-    private LevelRepository levelRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
+    @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private AuthRepository authRepository;
     @Autowired
     private PerfectRoleRepository perfectRoleRepository;
 
     @Autowired
-    private GenderRepository genderGameRepository;
-	@Autowired
-	private GameRepository gameRepository;
-	@Autowired
-	private AuthRepository authRepository;
-	@Autowired
-	private Cloudinary cloudinary;
+    private LevelRepository levelRepository;
 
-	@GetMapping("/")
-	public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    @Autowired
+    private GenderRepository genderRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+    @PostMapping("/add")
+    public ResponseEntity<Product> createProduct(@RequestParam("userProductId") Long userProductId,
+                                                @RequestParam("gameProductId") Long gameProductId,
+                                                @RequestParam("roleProductId") Long roleProductId,
+                                                @RequestParam("levelProductId") Long levelProductId,
+                                                @RequestParam("genderProductId") Long genderProductId,
+                                                @RequestParam("imgProduct") MultipartFile imgProduct,
+                                                @RequestParam("price") BigDecimal price,
+                                                @RequestParam("hour") int hour,
+                                                @RequestParam("description") String description) {
+        try {
+            if (userProductId == null || gameProductId == null || roleProductId == null || levelProductId == null
+                    || genderProductId == null || imgProduct == null || price == null || hour == 0 || description.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            Auth userProduct = authRepository.findById(userProductId).orElse(null);
+            Game gameProduct = gameRepository.findById(gameProductId).orElse(null);
+            PerfectRole roleProduct = perfectRoleRepository.findById(roleProductId).orElse(null);
+            LevelGame levelProduct = levelRepository.findById(levelProductId).orElse(null);
+            Gender genderProduct = genderRepository.findById(genderProductId).orElse(null);
+
+            if (userProduct == null || gameProduct == null || roleProduct == null || levelProduct == null || genderProduct == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(imgProduct.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = (String) uploadResult.get("url");
+
+            Product product = new Product();
+            product.setUser_product(userProduct);
+            product.setGame_product(gameProduct);
+            product.setRole_product(roleProduct);
+            product.setLevel_product(levelProduct);
+            product.setGender_product(genderProduct);
+            product.setImg_product(imageUrl);
+            product.setPrice(price);
+            product.setHour(hour);
+            product.setDecription(description);
+            product.setStatus(StatusAccount.ON);
+            product.setCreated_date(new Date());
+            // Set other properties as needed
+
+            Product savedProduct = productRepository.save(product);
+            return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-	@PostMapping("/saveProduct")
-	public ResponseEntity<Product> saveProduct(
-	        @RequestParam("userGameId") Long userGameId,
-	        @RequestParam("gameId") Long gameId,
-	        @RequestParam("price") BigDecimal price,
-	        @RequestParam("decription") String description,
-	        @RequestParam("images") List<MultipartFile> images,
-	        @RequestParam("roleId") Long roleId,
-	        @RequestParam("levelId") Long levelId,
-	        @RequestParam("genderId") Long genderId) {
 
-	    try {
-	        // Lấy thông tin người dùng và trò chơi từ cơ sở dữ liệu
-	        Optional<Auth> optionalUser = authRepository.findById(userGameId);
-	        Optional<Game> optionalGame = gameRepository.findById(gameId);
+    // Add other CRUD methods for Product as needed
 
-	        if (!optionalUser.isPresent() || !optionalGame.isPresent()) {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	        }
+    @GetMapping("/byUser/{userProductId}")
+    public ResponseEntity<List<Product>> getProductsByUser(@PathVariable Long userProductId) {
+        try {
+            List<Product> products = productRepository.findByUserProductId(userProductId);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	        Auth user = optionalUser.get();
-	        Game game = optionalGame.get();
+    @GetMapping("/")
+    public ResponseEntity<List<Product>> getAllProducts() {
+        try {
+            List<Product> products = productRepository.findAll();
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+        try {
+            productRepository.deleteById(productId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/edit/{productId}")
+    public ResponseEntity<Product> editProduct(@PathVariable Long productId,
+                                               @RequestBody Product updatedProduct) {
+        try {
+            Optional<Product> existingProductOptional = productRepository.findById(productId);
 
-	        // Lấy thông tin về role, level, và gender từ cơ sở dữ liệu
-	        Optional<PerfectRole> optionalRole = perfectRoleRepository.findById(roleId);
-	        Optional<LevelGame> optionalLevel = levelRepository.findById(levelId);
-	        Optional<Gender> optionalGender = genderGameRepository.findById(genderId);
+            if (existingProductOptional.isPresent()) {
+                Product existingProduct = existingProductOptional.get();
 
-	        if (!optionalRole.isPresent() || !optionalLevel.isPresent() || !optionalGender.isPresent()) {
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	        }
+                // Update properties of existingProduct with the values from updatedProduct
+                existingProduct.setGame_product(updatedProduct.getGame_product());
+                existingProduct.setRole_product(updatedProduct.getRole_product());
+                existingProduct.setLevel_product(updatedProduct.getLevel_product());
+                existingProduct.setGender_product(updatedProduct.getGender_product());
+                existingProduct.setImg_product(updatedProduct.getImg_product());
+                existingProduct.setPrice(updatedProduct.getPrice());
+                existingProduct.setHour(updatedProduct.getHour());
+                existingProduct.setDecription(updatedProduct.getDecription());
 
-	        PerfectRole role = optionalRole.get();
-	        LevelGame level = optionalLevel.get();
-	        Gender gender = optionalGender.get();
-
-	        // Tạo sản phẩm mới
-	        Product product = new Product();
-	        product.setUser_game(user);
-	        product.setGame(game);
-	        product.setRole(role);
-	        product.setLevel(level);
-	        product.setGender(gender);
-	        product.setStatus(StatusAccount.ON);
-	        product.setPrice(price);
-	        product.setDecription(description);
-	        product.setCreatedProduct(LocalDateTime.now());
-
-	        List<String> imageUrls = new ArrayList<>();
-
-	        for (MultipartFile image : images) {
-	            // Tải ảnh lên Cloudinary và lấy URL
-	            Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-	            String imageUrl = (String) uploadResult.get("url");
-	            imageUrls.add(imageUrl);
-	        }
-
-	        // Lưu danh sách URL hình ảnh vào sản phẩm
-	        product.setImageUrls(imageUrls);
-
-	        // Lưu sản phẩm
-	        Product savedProduct = productRepository.save(product);
-	        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-	}
+                // Save the updated product
+                Product savedProduct = productRepository.save(existingProduct);
+                return new ResponseEntity<>(savedProduct, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

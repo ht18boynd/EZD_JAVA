@@ -1,61 +1,69 @@
 package com.ezd.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
-@Entity
 @Data
+@Entity
 public class Product {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "user_product_id", referencedColumnName = "id")
+    private Auth user_product; 
+	
+	@JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "game_product_id", referencedColumnName = "id")
+    private Game game_product; 
+	
+	@JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "role_product_id", referencedColumnName = "id")
+    private PerfectRole role_product; 
+	
+	@JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "level_product_id", referencedColumnName = "id")
+    private LevelGame level_product; 
+	
+	
+	@JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "gender_product_id", referencedColumnName = "id")
+    private Gender gender_product; 
+	
+	
+	private String img_product;
+	private BigDecimal price;
+	
+	private int hour;
 
-	@ElementCollection
-	private List<String> imageUrls; // Danh sách URL hình ảnh
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(name = "user_prduct_id", referencedColumnName = "id")
-	private Auth user_game; // Tham chiếu đến người dùng
+
+	private String decription ; 
+	
+	private StatusAccount status;
+	private Date created_date;
+	
+
 
 	
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(name = "game_product_id", referencedColumnName = "id")
-	 private Game game; // Danh sách game tham chiếu
-
-	@ManyToOne
-	@JoinColumn(name = "role_id", referencedColumnName = "id")
-	@JsonBackReference
-	private PerfectRole role;
-
-	@ManyToOne
-	@JoinColumn(name = "level_id", referencedColumnName = "id")
-	@JsonBackReference
-	private LevelGame level;
-
-	@ManyToOne
-	@JoinColumn(name = "gender_id", referencedColumnName = "id")
-	@JsonBackReference
-	private Gender gender;
-	private StatusAccount status;
-	private String decription;
-	private BigDecimal price;
-	private LocalDateTime createdProduct;
-
+	
+	
+	
 }
