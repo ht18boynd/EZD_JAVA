@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class Gender {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @JsonBackReference
+    @OneToMany(mappedBy = "gender_product")
+    private List<Product> products ;
 
     public Long getId() {
 		return id;

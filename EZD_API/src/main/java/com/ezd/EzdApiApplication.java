@@ -10,11 +10,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.ezd")
 public class EzdApiApplication implements CommandLineRunner {
 
 	@Autowired
-	private AuthRepository userRepository;
+	private AuthRepository authRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(EzdApiApplication.class, args);
@@ -22,14 +22,16 @@ public class EzdApiApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Auth adminAccount = userRepository.findByRole(Role.ADMIN);
+		Auth adminAccount = authRepository.findByRole(Role.ADMIN);
 		if(null == adminAccount) {
 			Auth auth = new Auth();
 
 			auth.setEmail("admin@gmail.com");
 			auth.setRole(Role.ADMIN);
-			auth.setPassword(new BCryptPasswordEncoder().encode("admin123"));
-			userRepository.save(auth);
+
+			auth.setPassword(new BCryptPasswordEncoder().encode("viet1998"));
+			authRepository.save(auth);
+
 		}
 	}
 }

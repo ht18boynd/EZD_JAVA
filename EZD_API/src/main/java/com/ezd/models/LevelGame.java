@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 @Data
 @Entity
@@ -19,6 +20,9 @@ public class LevelGame {
     private Long id;
     private String name;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "level_product")
+    private List<Product> products ;
     public Long getId() {
 		return id;
 	}
