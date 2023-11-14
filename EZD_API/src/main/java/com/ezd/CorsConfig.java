@@ -17,8 +17,8 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         // Xác định chính xác URL của ứng dụng React của bạn (loại bỏ dấu gạch cuối cùng)
-        config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedOrigin("http://localhost:3001");
+        config.addAllowedOrigin("http://localhost:3000/");
+        config.addAllowedOrigin("http://localhost:3001/");
         
         config.addAllowedHeader("*");
         

@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
+
 @RequiredArgsConstructor
 public  class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
@@ -62,6 +63,7 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 	        // Kiểm tra xem người dùng có tồn tại hay không
 	        Auth user = userRepository.findByEmail(email)
 	                .orElseThrow();
+
 
 	        // Tạo mật khẩu mới
 	        String newPassword = generateRandomPassword();
