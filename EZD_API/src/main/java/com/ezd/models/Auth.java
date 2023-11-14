@@ -47,12 +47,7 @@ public class Auth implements UserDetails {
     private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
     
-    @JsonBackReference
 
-    @OneToMany(mappedBy = "user_game")
-    private List<Product> products; // Thêm danh sách giao dịch mà người dùng đã thực hiện
-
-    
     @JsonBackReference
     @OneToMany(mappedBy = "user_become")
     private List<BecomeIdol> becomes ;
@@ -90,7 +85,140 @@ public class Auth implements UserDetails {
         return true;
     }
 
-    @Override
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+
+	public StatusAccount getStatus() {
+		return status;
+	}
+
+	public void setStatus(StatusAccount status) {
+		this.status = status;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public LocalDateTime getBirthDay() {
+		return birthDay;
+	}
+
+	public void setBirthDay(LocalDateTime birthDay) {
+		this.birthDay = birthDay;
+	}
+
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(LocalDateTime createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+
+
+	public List<BecomeIdol> getBecomes() {
+		return becomes;
+	}
+
+	public void setBecomes(List<BecomeIdol> becomes) {
+		this.becomes = becomes;
+	}
+
+	public List<LuckySpin> getLuckys() {
+		return luckys;
+	}
+
+	public void setLuckys(List<LuckySpin> luckys) {
+		this.luckys = luckys;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
@@ -99,4 +227,31 @@ public class Auth implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    public Auth() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Auth(Long id, String name, String email, String password, String avatar, String address, String country,
+			String phoneNumber, String gender, BigDecimal balance, StatusAccount status, Role role,
+			LocalDateTime birthDay, LocalDateTime createdDate, List<Transaction> transactions, List<BecomeIdol> becomes,
+			List<LuckySpin> luckys) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.avatar = avatar;
+		this.address = address;
+		this.country = country;
+		this.phoneNumber = phoneNumber;
+		this.gender = gender;
+		this.balance = balance;
+		this.status = status;
+		this.role = role;
+		this.birthDay = birthDay;
+		this.createdDate = createdDate;
+		this.transactions = transactions;
+		this.becomes = becomes;
+		this.luckys = luckys;
+	}
 }

@@ -40,20 +40,30 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
     private MailService mailService;
-
 	private final AuthRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final AuthenticationManager authenticationManager;
-	private final JwtService jwtService;
+
+    @Autowired
+    public AuthenticationServiceImpl(AuthRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+	@Autowired
+	private  PasswordEncoder passwordEncoder;
+	@Autowired
+	private  AuthenticationManager authenticationManager;
+	@Autowired
+	private  JwtService jwtService;
    
 	 @Autowired
 	    private SpringTemplateEngine templateEngine; 
 
-	 public Auth signup(SignUpRequest signUpRequest) {
+	
+	
+
+	public Auth signup(SignUpRequest signUpRequest) {
 	        Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
 	        if (existingUser.isPresent()) {
 	            throw new RuntimeException("Email đã tồn tại.");

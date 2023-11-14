@@ -19,7 +19,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
 	@Autowired 
-	private final  AuthRepository authRepository;
-    private  final AuthenticationService authenticationService;
+	private   AuthRepository authRepository;
+	@Autowired 
+    private   AuthenticationService authenticationService;
 
     @PostMapping("/signup")
     public ResponseEntity<Auth> signup(@RequestBody SignUpRequest signUpRequest) throws MessagingException  {

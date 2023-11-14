@@ -46,9 +46,6 @@ public class LevelGame {
 	@ManyToMany(mappedBy = "levels")
     @JsonBackReference
     private List<Game> games;
-	@ManyToMany(mappedBy = "level")
-    @JsonBackReference
-    private List<Product> products;
 
     // Constructors, getters, and setters
 }
