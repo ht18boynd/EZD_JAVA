@@ -52,5 +52,7 @@ public class PerfectRole {
 	
 
 
+
+
     // Constructors, getters, and setters
 }

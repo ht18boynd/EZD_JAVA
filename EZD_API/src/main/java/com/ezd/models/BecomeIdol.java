@@ -73,4 +73,134 @@ public class BecomeIdol {
 		// TODO Auto-generated constructor stub
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public LocalDateTime getBirthDay() {
+		return birthDay;
+	}
+
+	public void setBirthDay(LocalDateTime birthDay) {
+		this.birthDay = birthDay;
+	}
+
+	public Auth getUser_become() {
+		return user_become;
+	}
+
+	public void setUser_become(Auth user_become) {
+		this.user_become = user_become;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getImg_before() {
+		return img_before;
+	}
+
+	public void setImg_before(String img_before) {
+		this.img_before = img_before;
+	}
+
+	public String getImg_after() {
+		return img_after;
+	}
+
+	public void setImg_after(String img_after) {
+		this.img_after = img_after;
+	}
+
+	public String getImg_avarta() {
+		return img_avarta;
+	}
+
+	public void setImg_avarta(String img_avarta) {
+		this.img_avarta = img_avarta;
+	}
+
+	public String getImg_rank() {
+		return img_rank;
+	}
+
+	public void setImg_rank(String img_rank) {
+		this.img_rank = img_rank;
+	}
+
+	public String getDecription() {
+		return decription;
+	}
+
+	public void setDecription(String decription) {
+		this.decription = decription;
+	}
+
+	public String getUrl_faceBook() {
+		return url_faceBook;
+	}
+
+	public void setUrl_faceBook(String url_faceBook) {
+		this.url_faceBook = url_faceBook;
+	}
+
+	public String getUrl_youtube() {
+		return url_youtube;
+	}
+
+	public void setUrl_youtube(String url_youtube) {
+		this.url_youtube = url_youtube;
+	}
+
+	public LocalDateTime getBecomeTime() {
+		return becomeTime;
+	}
+
+	public void setBecomeTime(LocalDateTime becomeTime) {
+		this.becomeTime = becomeTime;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public boolean isCheckedByAdmin() {
+		return checkedByAdmin;
+	}
+
+	public void setCheckedByAdmin(boolean checkedByAdmin) {
+		this.checkedByAdmin = checkedByAdmin;
+	}
+
+	public LocalDateTime getAdminCheckTime() {
+		return adminCheckTime;
+	}
+
+	public void setAdminCheckTime(LocalDateTime adminCheckTime) {
+		this.adminCheckTime = adminCheckTime;
+	}
+	
+	
+
 }
