@@ -10,20 +10,20 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @Configuration
 public class ThymeleafTemplateConfig {
 
-	@Bean
-	public SpringTemplateEngine templateEngine() {
-	    SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-	    templateEngine.setTemplateResolver(thymeleafTemplateResolver());
-	    return templateEngine;
-	}
+    @Bean
+    public SpringTemplateEngine templateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
+        return templateEngine;
+    }
 
-	private ITemplateResolver thymeleafTemplateResolver() {
-	    ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-	    templateResolver.setPrefix("templates/");
-	    templateResolver.setSuffix(".html");
-	    templateResolver.setTemplateMode(TemplateMode.HTML);
-	    templateResolver.setCharacterEncoding("UTF-8");
-	    return templateResolver;
-	}
-
+    private ITemplateResolver thymeleafTemplateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCharacterEncoding("UTF-8");
+        return templateResolver;
+    }
 }
+

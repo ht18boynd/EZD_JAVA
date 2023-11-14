@@ -1,6 +1,7 @@
 package com.ezd.models;
 
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,33 +30,41 @@ public class Auth implements UserDetails {
     private String name;
     private String email;
     private String password;
-    private String avatar;
+    @ElementCollection
+    private List<String> avatars;
     private String address;
     private String country;
     private String phoneNumber;
     private String gender;
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
     private StatusAccount status;
     
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private Role role;
     private LocalDateTime birthDay;
     private LocalDateTime createdDate;
+    
     @JsonBackReference
-
     @OneToMany(mappedBy = "user_transaction")
     private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_from")
+    private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_to")
+    private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
+
+   
     
     @JsonBackReference
-
-    @OneToMany(mappedBy = "user_game")
-    private List<Product> products; // Thêm danh sách giao dịch mà người dùng đã thực hiện
-
+    @OneToMany(mappedBy = "user_product")
+    private List<Product> products ;
     
     @JsonBackReference
     @OneToMany(mappedBy = "user_become")
     private List<BecomeIdol> becomes ;
+
 
     @JsonBackReference
 
