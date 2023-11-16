@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/ranks")
-@CrossOrigin(origins = "http://localhost:3000/")
+//@CrossOrigin(origins = "http://localhost:8000/")
 public class RankController {
 	
 	@Autowired

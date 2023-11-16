@@ -20,6 +20,7 @@ public class Transaction {
     private BigDecimal amount;
     private String currency;
     private Date timestamp;
+    
 	public Long getId() {
 		return id;
 	}

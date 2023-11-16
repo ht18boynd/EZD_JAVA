@@ -1,27 +1,47 @@
 package com.ezd.Dto;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
-public class SignUpRequest {
-	@NotBlank
+public class InfoDetailReponse {
+	private Long id;
     private String name;
-	@NotBlank
+
     private String accountName;
-	@NotBlank
+
     private String email;
-	@NotBlank
-    private String password;
     private String address;
     private String country;
     private String phoneNumber;
     private String gender;
     private BigDecimal balance;
-    private Set<String> role;
+    private List<String> role;
     
+    
+    
+	public InfoDetailReponse(Long id,String name, String accountName, String email, String address,
+			String country, String phoneNumber, String gender, BigDecimal balance, List<String> role) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.accountName = accountName;
+		this.email = email;
+		this.address = address;
+		this.country = country;
+		this.phoneNumber = phoneNumber;
+		this.gender = gender;
+		this.balance = balance;
+		this.role = role;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -39,12 +59,6 @@ public class SignUpRequest {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
 	}
 	public String getAddress() {
 		return address;
@@ -76,10 +90,10 @@ public class SignUpRequest {
 	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
-	public Set<String> getRole() {
+	public List<String> getRole() {
 		return role;
 	}
-	public void setRole(Set<String> role) {
+	public void setRole(List<String> role) {
 		this.role = role;
 	}
     

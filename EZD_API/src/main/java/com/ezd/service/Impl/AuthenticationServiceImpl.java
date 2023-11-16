@@ -1,256 +1,169 @@
 package com.ezd.service.Impl;
 
+import com.ezd.TokenRefreshException;
+import com.ezd.Dto.InfoDetailReponse;
 
-import com.ezd.Dto.JwtAuthenticationResponse;
-import com.ezd.Dto.RefreshTokenRequest;
+import com.ezd.Dto.MessageResponse;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
+import com.ezd.models.ERole;
+import com.ezd.models.RefreshToken;
 import com.ezd.models.Role;
-import com.ezd.models.Status;
-import com.ezd.repository.AuthRepository;
-import com.ezd.service.AuthenticationService;
-import com.ezd.service.JwtService;
-import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
+import com.ezd.repository.AuthRepository;
+import com.ezd.repository.RoleRepository;
+import com.ezd.service.AuthDetailsImpl;
+import com.ezd.service.RefreshTokenService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+
+import java.util.Set;
+
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public class AuthenticationServiceImpl implements AuthenticationService {
-    private  final AuthRepository userRepository;
-    private  final PasswordEncoder passwordEncoder;
-    private  final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+public class AuthenticationServiceImpl {
 
-    public Auth signup(SignUpRequest signUpRequest) {
-        Auth user = new Auth();
-
-        user.setName(signUpRequest.getName());
-        user.setAccountName(signUpRequest.getAccountName());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setAddress(signUpRequest.getAddress());
-        user.setCountry(signUpRequest.getCountry());
-        user.setPhoneNumber(signUpRequest.getPhoneNumber());
-        user.setGender(signUpRequest.getGender());
-        user.setBalance(BigDecimal.ZERO);
-        user.setStatus(Status.ON);
-        user.setRole(Role.USER);
-
-        return userRepository.save(user);
-    }
-    public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
-
-        var user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid Email and PassWord"));
-        var jwt = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
-
-        JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-
-        jwtAuthenticationResponse.setToken(jwt);
-        jwtAuthenticationResponse.setRefreshToken(refreshToken);
-        return jwtAuthenticationResponse;
-    }
-    public JwtAuthenticationResponse signinAdmin(SignInRequest signInRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
-
-        var user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid Email and PassWord"));
-        if (user.getRole() == Role.ADMIN) {
-            var jwt = jwtService.generateToken(user);
-            var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
-
-            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-
-            jwtAuthenticationResponse.setToken(jwt);
-            jwtAuthenticationResponse.setRefreshToken(refreshToken);
-            return jwtAuthenticationResponse;
-        } else {
-            throw new IllegalArgumentException("User is not an ADMIN");
-        }
-    }
-
-
-    public  JwtAuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) {
-        String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
-
-        Auth user = userRepository.findByEmail(userEmail).orElseThrow();
-        if(jwtService.isTokenValid(refreshTokenRequest.getToken(), user)){
-            var jwt = jwtService.generateToken(user);
-            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-
-            jwtAuthenticationResponse.setToken(jwt);
-            jwtAuthenticationResponse.setRefreshToken(refreshTokenRequest.getToken());
-
-            return jwtAuthenticationResponse;
-        }
-        return  null;
-    }
+	@Autowired
+	AuthenticationManager authenticationManager;
 	
-   
-    @Override
-	public void flush() {
-		// TODO Auto-generated method stub
-		
+	@Autowired
+	AuthRepository authRepository;
+	
+	@Autowired
+	RoleRepository roleRepository;
+	
+	@Autowired
+	PasswordEncoder encoder;
+	
+	@Autowired
+	JwtUtils jwtUtils;
+	
+	@Autowired
+	RefreshTokenService refreshTokenService;
+
+	public ResponseEntity<?> signup(SignUpRequest signUp) {
+		if (authRepository.existsByEmail(signUp.getEmail())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
+		}
+		if (authRepository.existsByAccountName(signUp.getAccountName())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: AccountName is already taken!"));
+		}
+		BigDecimal balance = signUp.getBalance();
+		// Create new User, Auth
+		Auth auth = new Auth(signUp.getName(), signUp.getAccountName(), signUp.getEmail(),
+				encoder.encode(signUp.getPassword()), signUp.getAddress(), signUp.getCountry(), signUp.getPhoneNumber(),
+				signUp.getGender(), balance);
+
+		Set<String> strRole = signUp.getRole();
+
+		Set<Role> roles = new HashSet<>();
+
+		if (strRole == null) {
+			Role authRole = roleRepository.findByName(ERole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+			roles.add(authRole);
+		} else {
+			strRole.forEach(role -> {
+				switch (role) {
+				case "admin":
+					Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(adminRole);
+					break;
+					
+				case "prov":
+					Role provRole = roleRepository.findByName(ERole.ROLE_PROVIDER)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(provRole);
+					break;
+					
+				default:
+					Role authRole = roleRepository.findByName(ERole.ROLE_USER)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(authRole);
+				}
+			});
+		}
+		auth.setRoles(roles);
+		authRepository.save(auth);
+		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
-	@Override
-	public <S extends Auth> S saveAndFlush(S entity) {
-		// TODO Auto-generated method stub
-		return null;
+
+	public ResponseEntity<?> signin(SignInRequest signInRequest) {
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		AuthDetailsImpl authDetails = (AuthDetailsImpl) authentication.getPrincipal();
+
+		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(authDetails);
+
+		BigDecimal balance = authDetails.getBalance();
+
+		// Chuyển đổi Set<Role> sang List<Role>
+		List<String> roles = authDetails.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+
+		// refresh TOken
+		RefreshToken refreshToken = refreshTokenService.createRefreshToken(authDetails.getId());
+		ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
+
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+				.body(new InfoDetailReponse(authDetails.getId(), authDetails.getUsername(),
+						authDetails.getAccountName(), authDetails.getEmail(), authDetails.getAddress(),
+						authDetails.getCountry(), authDetails.getPhoneNumber(), authDetails.getGender(), balance,
+						roles));
 	}
-	@Override
-	public <S extends Auth> List<S> saveAllAndFlush(Iterable<S> entities) {
-		// TODO Auto-generated method stub
-		return null;
+
+	public ResponseEntity<?> logout() {
+		Object principle = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principle.toString() != "anonymousUser") {
+			Long authId = ((AuthDetailsImpl) principle).getId();
+			refreshTokenService.deleteByUserId(authId);
+		}
+
+		ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
+		ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
+
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+				.body(new MessageResponse("You've been signed out!"));
 	}
-	@Override
-	public void deleteAllInBatch(Iterable<Auth> entities) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void deleteAllByIdInBatch(Iterable<Long> ids) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void deleteAllInBatch() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public Auth getOne(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Auth getById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Auth getReferenceById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public <S extends Auth> List<S> findAll(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public <S extends Auth> List<S> findAll(Example<S> example, Sort sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public <S extends Auth> List<S> saveAll(Iterable<S> entities) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public List<Auth> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public List<Auth> findAllById(Iterable<Long> ids) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public <S extends Auth> S save(S entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Optional<Auth> findById(Long id) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
-	}
-	@Override
-	public boolean existsById(Long id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public long count() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
-	public void deleteById(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void delete(Auth entity) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void deleteAllById(Iterable<? extends Long> ids) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void deleteAll(Iterable<? extends Auth> entities) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void deleteAll() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public List<Auth> findAll(Sort sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Page<Auth> findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public <S extends Auth> Optional<S> findOne(Example<S> example) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
-	}
-	@Override
-	public <S extends Auth> Page<S> findAll(Example<S> example, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public <S extends Auth> long count(Example<S> example) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
-	public <S extends Auth> boolean exists(Example<S> example) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public <S extends Auth, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
-		// TODO Auto-generated method stub
-		return null;
+
+	public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+		String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
+
+		if ((refreshToken != null) && (refreshToken.length() > 0)) {
+			return refreshTokenService.findByToken(refreshToken).map(refreshTokenService::verifyExpiration)
+					.map(RefreshToken::getAuth).map(auth -> {
+						ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(auth);
+
+						return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+								.body(new MessageResponse("Token is refreshed successfully!"));
+					}).orElseThrow(() -> new TokenRefreshException(refreshToken, "Refresh token is not in database!"));
+		}
+		return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
 	}
 }

@@ -14,7 +14,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        config.addAllowedOrigin("http://localhost:8080/"); // Đặt origin của ứng dụng React của bạn ở đây
+        config.addAllowedOrigin("http://localhost:8080/"); // Đặt origin của ứng dụng Vue của bạn ở đây
 
         config.addAllowedOrigin("http://localhost:3000/"); // Đặt origin của ứng dụng React của bạn ở đây
 

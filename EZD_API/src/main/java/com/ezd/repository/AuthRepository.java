@@ -9,10 +9,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface AuthRepository extends JpaRepository<Auth, Long> {
-	 @Query("SELECT a FROM Auth a WHERE a.email = :email")
-	 Optional<Auth> findByEmail(@Param("email") String email);
-  
-    Auth findByRole (Role role);
+//	@Query("SELECT a FROM Auth a WHERE a.email = :email")
+//	Optional<Auth> findByEmail(@Param("email") String email);
+	Optional<Auth> findByEmail(String email);
+	Optional<Auth> findByUsername(String username);
+	boolean existsByAccountName(String accountName);
+
+	Boolean existsByEmail(String email);
 }

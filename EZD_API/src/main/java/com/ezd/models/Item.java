@@ -1,6 +1,7 @@
 package com.ezd.models;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,12 @@ public class Item {
     @Column(nullable = false, name="item_price")
     private BigDecimal price;
     
+	public Item(String name, String imageUrl, BigDecimal price) {
+		super();
+		this.name = name;
+		this.imageUrl = imageUrl;
+		this.price = price;
+	}
 	public Item() {
 		super();
 	}

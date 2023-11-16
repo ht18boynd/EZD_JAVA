@@ -1,6 +1,7 @@
 package com.ezd.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +45,13 @@ public class ItemController {
     public ResponseEntity<Item> saveItem(@Valid @ModelAttribute Item item, @RequestPart("imageFile") MultipartFile imageFile) throws IOException {
         Item savedItem = itemService.saveItem(item, imageFile);
         return ResponseEntity.ok(savedItem);
+    }
+    
+    @RequestMapping(value = "/add-multiple",method = RequestMethod.POST)
+    public ResponseEntity<List<Item>> createMultipleItems(@Valid @ModelAttribute ArrayList<Item> items,
+    		@RequestPart("imageFile") List<MultipartFile> files) throws IOException {
+        List<Item> savedItems = itemService.createMultipleItems(items, files);
+        return ResponseEntity.ok(savedItems);
     }
     
     @RequestMapping(value = "/delete/{itemId}", method = RequestMethod.DELETE)
