@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @Entity
 public class Auth implements UserDetails {
     @Id
@@ -124,13 +123,6 @@ public class Auth implements UserDetails {
 		this.email = email;
 	}
 
-	public String getAvatar() {
-		return avatar;
-	}
-
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
-	}
 
 	public String getAddress() {
 		return address;
@@ -246,27 +238,4 @@ public class Auth implements UserDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Auth(Long id, String name, String email, String password, String avatar, String address, String country,
-			String phoneNumber, String gender, BigDecimal balance, StatusAccount status, Role role,
-			LocalDateTime birthDay, LocalDateTime createdDate, List<Transaction> transactions, List<BecomeIdol> becomes,
-			List<LuckySpin> luckys) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.avatar = avatar;
-		this.address = address;
-		this.country = country;
-		this.phoneNumber = phoneNumber;
-		this.gender = gender;
-		this.balance = balance;
-		this.status = status;
-		this.role = role;
-		this.birthDay = birthDay;
-		this.createdDate = createdDate;
-		this.transactions = transactions;
-		this.becomes = becomes;
-		this.luckys = luckys;
-	}
 }
