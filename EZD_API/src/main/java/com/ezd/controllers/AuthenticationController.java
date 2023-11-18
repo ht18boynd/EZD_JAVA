@@ -73,9 +73,13 @@ public class AuthenticationController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/")
+    @GetMapping("/role")
     public List<Auth> getAllUser(@RequestParam("role") Role role) {
         return  authRepository.getAllUsersList(role);
+    }
+    @GetMapping("/")
+    public List<Auth> getAllUser() {
+        return  authRepository.findAll();
     }
     
     @PostMapping("/reset-password")
