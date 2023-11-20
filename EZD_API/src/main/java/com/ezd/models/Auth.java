@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,6 +46,10 @@ public class Auth implements UserDetails {
     private LocalDateTime birthDay;
     private LocalDateTime createdDate;
     
+    @ManyToOne
+    @JoinColumn(name = "rank_id")
+    private Rank currentRank;
+    
     @JsonBackReference
     @OneToMany(mappedBy = "user_transaction")
     private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
@@ -51,12 +57,11 @@ public class Auth implements UserDetails {
     @JsonBackReference
     @OneToMany(mappedBy = "user_from")
     private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
+    
     @JsonBackReference
+    
     @OneToMany(mappedBy = "user_to")
     private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
-
-   
-    
 
     @JsonBackReference
     @OneToMany(mappedBy = "user_product")
@@ -65,10 +70,9 @@ public class Auth implements UserDetails {
     @JsonBackReference
     @OneToMany(mappedBy = "user_become")
     private List<BecomeIdol> becomes ;
-
-
+    
     @JsonBackReference
-
+    
     @OneToMany(mappedBy = "user_lucky")
     private List<LuckySpin> luckys; //
     
@@ -84,8 +88,16 @@ public class Auth implements UserDetails {
         return password;
     }
 
+    
+    public Rank getCurrentRank() {
+		return currentRank;
+	}
 
-    @Override
+	public void setCurrentRank(Rank currentRank) {
+		this.currentRank = currentRank;
+	}
+
+	@Override
     public String getUsername() {
         return email;
     }
@@ -123,13 +135,39 @@ public class Auth implements UserDetails {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public String getAvatar() {
-		return avatar;
+	
+	
+	
+	public List<String> getAvatars() {
+		return avatars;
 	}
 
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
+	public void setAvatars(List<String> avatars) {
+		this.avatars = avatars;
+	}
+
+	public List<Donate> getDonationsFrom() {
+		return donationsFrom;
+	}
+
+	public void setDonationsFrom(List<Donate> donationsFrom) {
+		this.donationsFrom = donationsFrom;
+	}
+
+	public List<Donate> getDonationsTo() {
+		return donationsTo;
+	}
+
+	public void setDonationsTo(List<Donate> donationsTo) {
+		this.donationsTo = donationsTo;
+	}
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 
 	public String getAddress() {
@@ -246,16 +284,17 @@ public class Auth implements UserDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Auth(Long id, String name, String email, String password, String avatar, String address, String country,
-			String phoneNumber, String gender, BigDecimal balance, StatusAccount status, Role role,
-			LocalDateTime birthDay, LocalDateTime createdDate, List<Transaction> transactions, List<BecomeIdol> becomes,
+	public Auth(Long id, String name, String email, String password, List<String> avatars, String address,
+			String country, String phoneNumber, String gender, BigDecimal balance, StatusAccount status, Role role,
+			LocalDateTime birthDay, LocalDateTime createdDate, List<Transaction> transactions,
+			List<Donate> donationsFrom, List<Donate> donationsTo, List<Product> products, List<BecomeIdol> becomes,
 			List<LuckySpin> luckys) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.avatar = avatar;
+		this.avatars = avatars;
 		this.address = address;
 		this.country = country;
 		this.phoneNumber = phoneNumber;
@@ -266,7 +305,12 @@ public class Auth implements UserDetails {
 		this.birthDay = birthDay;
 		this.createdDate = createdDate;
 		this.transactions = transactions;
+		this.donationsFrom = donationsFrom;
+		this.donationsTo = donationsTo;
+		this.products = products;
 		this.becomes = becomes;
 		this.luckys = luckys;
 	}
+
+    
 }

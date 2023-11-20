@@ -34,4 +34,59 @@ public class Donate {
     
    
     private LocalDateTime transactionDate;
+    
+	public Donate() {
+		super();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+
+	public Auth getUser_from() {
+		return user_from;
+	}
+
+
+	public void setUser_from(Auth user_from) {
+		this.user_from = user_from;
+	}
+
+
+	public Auth getUser_to() {
+		return user_to;
+	}
+
+
+	public void setUser_to(Auth user_to) {
+		this.user_to = user_to;
+	}
+
+
+	public LocalDateTime getTransactionDate() {
+		return transactionDate;
+	}
+
+
+	public void setTransactionDate(LocalDateTime transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+    
+    
 }

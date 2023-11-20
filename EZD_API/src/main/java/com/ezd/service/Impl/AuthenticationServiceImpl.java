@@ -7,6 +7,8 @@ import com.ezd.Dto.Role;
 import com.ezd.Dto.SignInRequest;
 import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
+import com.ezd.models.Item;
+import com.ezd.models.Rank;
 import com.ezd.models.StatusAccount;
 import com.ezd.repository.AuthRepository;
 import com.ezd.service.AuthenticationService;
@@ -44,72 +46,76 @@ import java.util.function.Function;
 @Service
 
 @RequiredArgsConstructor
-public  class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	private MailService mailService;
 	@Autowired
-	private final AuthRepository userRepository;
+	private AuthRepository userRepository;
 	@Autowired
-	private final PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 	@Autowired
-	private final AuthenticationManager authenticationManager;
+	private AuthenticationManager authenticationManager;
 	@Autowired
-	private final JwtService jwtService;
+	private JwtService jwtService;
 
 	@Autowired
 	private SpringTemplateEngine templateEngine;
-	
-	 public void resetPassword(String email) {
-	        // Kiểm tra xem người dùng có tồn tại hay không
-	        Auth user = userRepository.findByEmail(email)
-	                .orElseThrow();
 
+	public Optional<Auth> getAuthById(Long itemId) {
+		return userRepository.findById(itemId);
+	}
 
-	        // Tạo mật khẩu mới
-	        String newPassword = generateRandomPassword();
+	public void resetPassword(String email) {
+		// Kiểm tra xem người dùng có tồn tại hay không
+		Auth user = userRepository.findByEmail(email).orElseThrow();
 
-	        // Cập nhật mật khẩu mới trong cơ sở dữ liệu
-	        user.setPassword(passwordEncoder.encode(newPassword));
-	        userRepository.save(user);
+		// Tạo mật khẩu mới
+		String newPassword = generateRandomPassword();
 
-	        // Gửi email thông báo về mật khẩu mới
-	        sendPasswordResetEmail(user.getName(), email, newPassword);
-	    }
-	 
-	 private void sendPasswordResetEmail(String userName, String toEmail, String newPassword) {
-	        String htmlContent = generateHtmlContent("password-reset",
-	                Map.of("user", userName, "email", toEmail, "newPassword", newPassword));
+		// Cập nhật mật khẩu mới trong cơ sở dữ liệu
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepository.save(user);
 
-	        DataMailDTO mailStructure = new DataMailDTO();
-	        mailStructure.setSubject("Đặt Lại Mật Khẩu Thành Công");
+		// Gửi email thông báo về mật khẩu mới
+		sendPasswordResetEmail(user.getName(), email, newPassword);
+	}
 
-	        try {
-	        	Map<String, Object> model = new HashMap<>();
-				model.put("user", userName);
-				model.put("email", toEmail);
-				model.put("newPassword",newPassword);
-	            mailService.sendHtmlMail(mailStructure, toEmail, model, "password-reset");
-	        } catch (MessagingException | IOException e) {
-	            // Xử lý exception nếu cần
-	            e.printStackTrace();
-	        }
-	    }
-	    private String generateRandomPassword() {
-	        // Logic để tạo mật khẩu ngẫu nhiên
-	        // Bạn có thể sử dụng thư viện như Apache Commons Lang để tạo chuỗi ngẫu nhiên.
-	        return RandomStringUtils.randomAlphanumeric(10);
-	    }
+	private void sendPasswordResetEmail(String userName, String toEmail, String newPassword) {
+		String htmlContent = generateHtmlContent("password-reset",
+				Map.of("user", userName, "email", toEmail, "newPassword", newPassword));
+
+		DataMailDTO mailStructure = new DataMailDTO();
+		mailStructure.setSubject("Đặt Lại Mật Khẩu Thành Công");
+
+		try {
+			Map<String, Object> model = new HashMap<>();
+			model.put("user", userName);
+			model.put("email", toEmail);
+			model.put("newPassword", newPassword);
+			mailService.sendHtmlMail(mailStructure, toEmail, model, "password-reset");
+		} catch (MessagingException | IOException e) {
+			// Xử lý exception nếu cần
+			e.printStackTrace();
+		}
+	}
+
+	private String generateRandomPassword() {
+		// Logic để tạo mật khẩu ngẫu nhiên
+		// Bạn có thể sử dụng thư viện như Apache Commons Lang để tạo chuỗi ngẫu nhiên.
+		return RandomStringUtils.randomAlphanumeric(10);
+	}
 
 	public Auth signup(SignUpRequest signUpRequest) {
 		Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
 		if (existingUser.isPresent()) {
 			throw new RuntimeException("Email đã tồn tại.");
 		}
-
+		Rank defaultRank = new Rank();
+		defaultRank.setRank_id(1L);
 		Auth user = new Auth();
 		List<String> avatars = new ArrayList<>();
 		avatars.add("https://res.cloudinary.com/dbdz9u1y6/image/upload/v1698467917/oogfmmehumkcbpxfaqrv.jpg");
-		    user.setAvatars(avatars);
+		user.setAvatars(avatars);
 		user.setName(signUpRequest.getName());
 		user.setEmail(signUpRequest.getEmail());
 		user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
@@ -122,10 +128,11 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 		user.setRole(Role.USER);
 		user.setBirthDay(signUpRequest.getBirthDay());
 		user.setCreatedDate(LocalDateTime.now());
-
+		user.setCurrentRank(defaultRank);
+		
 		// Thay đổi cách gọi phương thức generateHtmlContent
 		String htmlContent = generateHtmlContent("email",
-		        Map.of("email", signUpRequest.getEmail(), "password", signUpRequest.getPassword()));
+				Map.of("email", signUpRequest.getEmail(), "password", signUpRequest.getPassword()));
 
 		DataMailDTO mailStructure = new DataMailDTO();
 		mailStructure.setSubject("Xác Nhận Đăng Ký Tài Khoản Thành Công");
@@ -136,17 +143,14 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 			model.put("user", signUpRequest.getName());
 			model.put("email", signUpRequest.getEmail());
 			model.put("password", signUpRequest.getPassword());
-			mailService.sendHtmlMail(mailStructure, signUpRequest.getEmail(), model,"email");
+			mailService.sendHtmlMail(mailStructure, signUpRequest.getEmail(), model, "email");
 		} catch (MessagingException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return userRepository.save(user);
 	}
 
-	
-	
 	private String generateHtmlContent(String templateName, Map<String, Object> model) {
 		// Sử dụng templateEngine để xử lý template
 		Context context = new Context();
@@ -212,23 +216,23 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	public void updatePassword(String userEmail, String currentPassword, String newPassword) {
-	    Auth user = userRepository.findByEmail(userEmail)
-	            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+		Auth user = userRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-	    // Kiểm tra mật khẩu hiện tại
-	    if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-	        throw new IllegalArgumentException("Invalid current password");
-	    }
+		// Kiểm tra mật khẩu hiện tại
+		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+			throw new IllegalArgumentException("Invalid current password");
+		}
 
-	    // Cập nhật mật khẩu mới
-	    user.setPassword(passwordEncoder.encode(newPassword));
-	    userRepository.save(user);
+		// Cập nhật mật khẩu mới
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepository.save(user);
 	}
 
 	@Override
 	public void flush() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -246,19 +250,19 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public void deleteAllInBatch(Iterable<Auth> entities) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAllByIdInBatch(Iterable<Long> ids) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAllInBatch() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -336,31 +340,31 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public void deleteById(Long id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void delete(Auth entity) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAllById(Iterable<? extends Long> ids) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAll(Iterable<? extends Auth> entities) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAll() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
