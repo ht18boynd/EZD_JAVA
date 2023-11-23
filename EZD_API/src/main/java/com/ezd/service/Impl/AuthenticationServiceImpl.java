@@ -33,6 +33,7 @@ import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,6 +60,8 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	private SpringTemplateEngine templateEngine;
 	
+    private static final String ALLOWED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
 	 public void resetPassword(String email) {
 	        // Kiểm tra xem người dùng có tồn tại hay không
 	        Auth user = userRepository.findByEmail(email)
@@ -66,7 +69,7 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 
 
 	        // Tạo mật khẩu mới
-	        String newPassword = generateRandomPassword();
+	        String newPassword = generateRandomPassword(10);
 
 	        // Cập nhật mật khẩu mới trong cơ sở dữ liệu
 	        user.setPassword(passwordEncoder.encode(newPassword));
@@ -94,12 +97,24 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 	            e.printStackTrace();
 	        }
 	    }
-	    private String generateRandomPassword() {
-	        // Logic để tạo mật khẩu ngẫu nhiên
-	        // Bạn có thể sử dụng thư viện như Apache Commons Lang để tạo chuỗi ngẫu nhiên.
-	        return RandomStringUtils.randomAlphanumeric(10);
-	    }
+	 private static String generateRandomPassword(int length) {
+	        SecureRandom random = new SecureRandom();
+	        StringBuilder password = new StringBuilder();
 
+	        // Bảng ký tự cho phép
+	        String characters = ALLOWED_CHARACTERS;
+
+	        // Đảm bảo rằng chuỗi có chứa ít nhất một chữ cái và một số
+	        password.append(characters.charAt(random.nextInt(characters.length() - 10))); // ít nhất một chữ cái
+	        password.append(characters.charAt(random.nextInt(10))); // ít nhất một số
+
+	        // Tạo phần còn lại của chuỗi ngẫu nhiên
+	        for (int i = 2; i < length; i++) {
+	            password.append(characters.charAt(random.nextInt(characters.length())));
+	        }
+
+	        return password.toString();
+	    }
 	public Auth signup(SignUpRequest signUpRequest) {
 		Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
 		if (existingUser.isPresent()) {
