@@ -1,6 +1,5 @@
 package com.ezd.models;
 
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,62 +29,57 @@ import com.ezd.LocalDateTimeDeserializer;
 
 @Entity
 public class Auth implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String name;
-    private String email;
-    private String password;
-    @ElementCollection
-    private List<String> avatars;
-    private String address;
-    private String country;
-    private String phoneNumber;
-    private String gender;
-    private BigDecimal balance = BigDecimal.ZERO;
-    private StatusAccount status;
-    
-    @JsonInclude(JsonInclude.Include.ALWAYS)
-    private Role role;
-    
-    
-    
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	private String name;
+	private String email;
+	private String password;
+	@ElementCollection
+	private List<String> avatars;
+	private String address;
+	private String country;
+	private String phoneNumber;
+	private String gender;
+	private BigDecimal balance = BigDecimal.ZERO;
+	private StatusAccount status;
 
-    private String birthDay;
-    private LocalDateTime createdDate;
-    
-    @ManyToOne
-    @JoinColumn(name = "rank_id")
-    private Rank currentRank;
-    
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_transaction")
-    private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
+	@JsonInclude(JsonInclude.Include.ALWAYS)
+	private Role role;
+	private LocalDateTime birthDay;
+	private LocalDateTime createdDate;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_from")
-    private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
-    
-    @JsonBackReference
-    
-    @OneToMany(mappedBy = "user_to")
-    private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
+	@ManyToOne
+	@JoinColumn(name = "rank_id")
+	private Rank currentRank;
+	@JsonBackReference
+	@OneToMany(mappedBy = "auth_purchase")
+	private List<Purchase> purchases;
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_transaction")
+	private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_product")
-    private List<Product> products ;
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_from")
+	private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_become")
-    private List<BecomeIdol> becomes ;
-    
-    @JsonBackReference
-    
-    @OneToMany(mappedBy = "user_lucky")
-    private List<LuckySpin> luckys; //
-    
-   
+	@JsonBackReference
+
+	@OneToMany(mappedBy = "user_to")
+	private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
+
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_product")
+	private List<Product> products;
+
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_become")
+	private List<BecomeIdol> becomes;
+
+	@JsonBackReference
+
+	@OneToMany(mappedBy = "user_lucky")
+	private List<LuckySpin> luckys; //
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -106,22 +100,35 @@ public class Auth implements UserDetails {
 		this.currentRank = currentRank;
 	}
 
+	public List<Purchase> getPurchases() {
+		return purchases;
+	}
+
+	public void setPurchases(List<Purchase> purchases) {
+		this.purchases = purchases;
+	}
+
 	@Override
-    public String getUsername() {
-        return email;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+	@Override
+	public String getUsername() {
+		return email;
+	}
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-    public Long getId() {
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	public Long getId() {
 		return id;
 	}
 
@@ -225,6 +232,37 @@ public class Auth implements UserDetails {
 		this.transactions = transactions;
 	}
 
+	public List<String> getAvatars() {
+		return avatars;
+	}
+
+	public void setAvatars(List<String> avatars) {
+		this.avatars = avatars;
+	}
+
+	public List<Donate> getDonationsFrom() {
+		return donationsFrom;
+	}
+
+	public void setDonationsFrom(List<Donate> donationsFrom) {
+		this.donationsFrom = donationsFrom;
+	}
+
+	public List<Donate> getDonationsTo() {
+		return donationsTo;
+	}
+
+	public void setDonationsTo(List<Donate> donationsTo) {
+		this.donationsTo = donationsTo;
+	}
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
 
 	public List<BecomeIdol> getBecomes() {
 		return becomes;
@@ -247,16 +285,29 @@ public class Auth implements UserDetails {
 	}
 
 	@Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-    public Auth() {
-		// TODO Auto-generated constructor stub
+	public boolean isCredentialsNonExpired() {
+		return true;
 	}
 
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+	// Cập nhật số lượng item giảm cho người mua
+	public void decreaseItemQuantity(Purchase purchase, int quantity) {
+		if (purchase != null) {
+			purchase.setQuantity(purchase.getQuantity() - quantity);
+		}
+	}
+
+	public void increaseItemQuantity(Purchase purchase, int quantity) {
+		if (purchase != null) {
+			purchase.setQuantity(purchase.getQuantity() + quantity);
+		}
+	}
+
+	public Auth() {
+		// TODO Auto-generated constructor stub
+	}
 }

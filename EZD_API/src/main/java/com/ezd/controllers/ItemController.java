@@ -28,7 +28,7 @@ import com.ezd.service.ItemService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("api/items")
+@RequestMapping("/api/items")
 public class ItemController {
 
 	@Autowired
@@ -101,4 +101,5 @@ public class ItemController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
+
 }

@@ -55,7 +55,6 @@ public class RankService {
 		} else {
 			rank.setRank_name(rankName);
 		}
-
 		BigDecimal minimumBalance = rank.getMinimum_balance();
 		if (minimumBalance.compareTo(BigDecimal.ZERO) <= 0 || minimumBalance == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -69,7 +68,6 @@ public class RankService {
 					"maximumBalance không thể nhỏ hơn 0, hoặc không được null");
 		}
 		rank.setMaximum_balance(maximumBalance);
-		
 		rank.setMinimum_balance(minimumBalance);
 		if (!isValidateImageFile(adminFrameImage, allowExtensions)
 				|| !isValidateImageFile(backgroundImage, allowExtensions)) {
@@ -108,14 +106,12 @@ public class RankService {
 		} else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minimumBalance không hợp lệ");
 		}
-		
 		BigDecimal maximumBalance = updatedRank.getMaximum_balance();
 		if (minimumBalance.compareTo(BigDecimal.ZERO) < 0 || minimumBalance == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"maximumBalance không thể nhỏ hơn 0, hoặc không được null");
 		}
 		existingRank.setMaximum_balance(maximumBalance);
-		
 		// Kiểm tra điều kiện đuôi file cho phép
 		if (!isValidateImageFile(adminFrameImage, allowExtensions)
 				|| !isValidateImageFile(backgroundImage, allowExtensions)) {

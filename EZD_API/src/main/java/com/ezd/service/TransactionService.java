@@ -64,6 +64,7 @@ public class TransactionService {
 					authRepository.save(user);
 
 					// Kiểm tra và cập nhật Rank của người chơi
+
 					updateRankForUser(user, transactionAmount);
 				}
 			}
@@ -73,25 +74,20 @@ public class TransactionService {
 	private void updateRankForUser(Auth user, BigDecimal transactionAmount) {
 		// Lấy danh sách Rank từ cơ sở dữ liệu
 		List<Rank> ranks = rankRepository.findAll();
+		// Tính toán tổng balance dựa trên các giao dịch của người dùng
+		BigDecimal totalBalance = user.getTransactions().stream().map(Transaction::getAmount).reduce(BigDecimal.ZERO,
+				BigDecimal::add);
+		// Tính toán Rank mới dựa trên logic cụ thể của bạn
+		Rank newRank = ranks.stream().filter(rank -> totalBalance.compareTo(rank.getMinimum_balance()) >= 0
+				&& totalBalance.compareTo(rank.getMaximum_balance()) < 0).findFirst().orElse(null);
 
-		// Lấy số dư hiện tại của người chơi
-		BigDecimal userBalance = user.getBalance();
-
-		for (Rank rank : ranks) {
-			if (userBalance.compareTo(rank.getMinimum_balance()) >= 0
-					&& userBalance.compareTo(rank.getMaximum_balance()) < 0) {
-				// Nếu số dư nằm trong khoảng của Rank, cập nhật Rank mới
-				user.setCurrentRank(rank);
-
-				// Lưu thay đổi vào cơ sở dữ liệu
-				authRepository.save(user);
-				return;
-			}
+		// Kiểm tra nếu Rank mới khác với Rank hiện tại của người chơi
+		if (!Objects.equals(user.getCurrentRank(), newRank)) {
+			// Cập nhật Rank mới cho người chơi
+			user.setCurrentRank(newRank);
+			// Lưu thay đổi vào cơ sở dữ liệu
+			authRepository.save(user);
 		}
-
-		// Nếu không thuộc vào bất kỳ Rank nào, giữ nguyên Rank 0
-		user.setCurrentRank(null); // hoặc có thể là user.setCurrentRank(rank0) nếu có một Rank đặc biệt cho Rank 0
-		authRepository.save(user);
 	}
 
 	public List<Transaction> getTransactionsByStatus(Status status) {

@@ -38,8 +38,6 @@ public class RankController {
 
 	@Autowired
 	private RankService rankService;
-	@Autowired
-	private CloudinaryService cloudinaryService;
 
 	@GetMapping("/")
 	public ResponseEntity<List<Rank>> getAllRanks() {
@@ -94,5 +92,6 @@ public class RankController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+
 	}
 }

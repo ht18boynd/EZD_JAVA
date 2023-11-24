@@ -1,6 +1,5 @@
 package com.ezd.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,11 +11,10 @@ import com.ezd.Dto.Role;
 import com.ezd.Dto.Status;
 import com.ezd.models.Auth;
 import com.ezd.models.BecomeIdol;
-import com.ezd.models.Transaction;
 import com.ezd.repository.AuthRepository;
 import com.ezd.repository.BecomeRepository;
-@Service
 
+@Service
 public class BecomeService {
 	   @Autowired
 	    private BecomeRepository becomeRepository;
