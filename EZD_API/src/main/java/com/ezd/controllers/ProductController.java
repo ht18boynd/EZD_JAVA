@@ -115,6 +115,16 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/byGame/{gameProductId}")
+    public ResponseEntity<List<Product>> getProductsByGame(@PathVariable Long gameProductId) {
+        try {
+            List<Product> products = productRepository.findByGameProductId(gameProductId);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<Product>> getAllProducts() {

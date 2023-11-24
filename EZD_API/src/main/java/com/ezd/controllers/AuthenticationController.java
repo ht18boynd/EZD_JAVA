@@ -56,7 +56,16 @@ public class AuthenticationController {
     }
     @PostMapping("/signinAdmin")
     public  ResponseEntity<JwtAuthenticationResponse> signinAdmin(@RequestBody SignInRequest signInRequest) {
-        return  ResponseEntity.ok(authenticationService.signinAdmin(signInRequest));
+    	try {
+			if(signInRequest == null) {
+			System.out.println("Blank !");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	 return  ResponseEntity.ok(authenticationService.signinAdmin(signInRequest));
+       
     }
 
     @PostMapping("/refresh")

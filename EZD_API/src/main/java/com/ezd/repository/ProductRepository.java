@@ -10,9 +10,13 @@ import com.ezd.models.Product;
 
 
 
-public interface ProductRepository extends JpaRepository< Product, Long>{
-    @Query("SELECT p FROM Product p WHERE p.user_product.id = :userProductId")
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    @Query("SELECT p FROM Product p WHERE p.user_product.id = :userProductId")
     List<Product> findByUserProductId(@Param("userProductId") Long userProductId);
 
+    @Query("SELECT p FROM Product p WHERE p.game_product.id = :gameProductId")
+    List<Product> findByGameProductId(@Param("gameProductId") Long gameProductId);
+
 }
+
