@@ -420,4 +420,10 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 		return null;
 	}
 
+	@Override
+	public Optional<Auth> getAuthById(Long id) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
 }
