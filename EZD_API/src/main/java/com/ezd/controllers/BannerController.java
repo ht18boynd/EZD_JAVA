@@ -50,7 +50,7 @@ public class BannerController {
 
             Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
             String imageUrl = (String) uploadResult.get("url");
-
+            
             Banner banner = new Banner();
             banner.setName(name);
             banner.setTitle(title);

@@ -47,4 +47,21 @@ public class MailService {
 
 		javaMailSender.send(mimeMessage);
 	}
+	 public void replyToEmail(String toEmail, String subject, String content)
+	            throws MessagingException, IOException {
+	        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+	        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+	        // Set thông tin người nhận, người gửi, và tiêu đề
+	        helper.setTo(toEmail);
+	        helper.setSubject(subject);
+	        helper.setFrom(fromMail);
+
+	        // Đặt nội dung của email
+	        helper.setText(content, true);
+	        helper.getMimeMessage().setContent(content, "text/html; charset=utf-8");
+
+	        javaMailSender.send(mimeMessage);
+	    }
+
 }

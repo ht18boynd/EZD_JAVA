@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,9 +22,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+
 import com.ezd.LocalDateTimeDeserializer;
 @Data
+
+
 @Entity
 public class Auth implements UserDetails {
     @Id
@@ -50,6 +54,10 @@ public class Auth implements UserDetails {
     private String birthDay;
     private LocalDateTime createdDate;
     
+    @ManyToOne
+    @JoinColumn(name = "rank_id")
+    private Rank currentRank;
+    
     @JsonBackReference
     @OneToMany(mappedBy = "user_transaction")
     private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
@@ -57,12 +65,11 @@ public class Auth implements UserDetails {
     @JsonBackReference
     @OneToMany(mappedBy = "user_from")
     private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
+    
     @JsonBackReference
+    
     @OneToMany(mappedBy = "user_to")
     private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
-
-   
-    
 
     @JsonBackReference
     @OneToMany(mappedBy = "user_product")
@@ -71,10 +78,9 @@ public class Auth implements UserDetails {
     @JsonBackReference
     @OneToMany(mappedBy = "user_become")
     private List<BecomeIdol> becomes ;
-
-
+    
     @JsonBackReference
-
+    
     @OneToMany(mappedBy = "user_lucky")
     private List<LuckySpin> luckys; //
     
@@ -90,8 +96,16 @@ public class Auth implements UserDetails {
         return password;
     }
 
+    
+    public Rank getCurrentRank() {
+		return currentRank;
+	}
 
-    @Override
+	public void setCurrentRank(Rank currentRank) {
+		this.currentRank = currentRank;
+	}
+
+	@Override
     public String getUsername() {
         return email;
     }
@@ -129,8 +143,6 @@ public class Auth implements UserDetails {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
 
 	public String getAddress() {
 		return address;

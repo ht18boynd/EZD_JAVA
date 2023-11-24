@@ -135,7 +135,7 @@ public class AuthenticationController {
                 }
 
                 // Gán danh sách đường dẫn avatars cho người dùng
-                user.setAvatars(avatarUrls);
+//                user.setAvatars(avatarUrls);
 
                 Auth updatedUser = authRepository.save(user);
                 return new ResponseEntity<>(updatedUser, HttpStatus.OK);

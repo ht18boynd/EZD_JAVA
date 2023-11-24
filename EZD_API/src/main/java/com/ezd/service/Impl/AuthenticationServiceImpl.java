@@ -124,7 +124,7 @@ public  class AuthenticationServiceImpl implements AuthenticationService {
 		Auth user = new Auth();
 		List<String> avatars = new ArrayList<>();
 		avatars.add("https://res.cloudinary.com/dbdz9u1y6/image/upload/v1698467917/oogfmmehumkcbpxfaqrv.jpg");
-		    user.setAvatars(avatars);
+//		    user.setAvatars(avatars);
 		user.setName(signUpRequest.getName());
 		user.setEmail(signUpRequest.getEmail());
 		user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
