@@ -45,14 +45,6 @@ public class Rank {
 		super();
 	}
 
-	public BigDecimal getMaximum_balance() {
-		return maximum_balance;
-	}
-
-	public void setMaximum_balance(BigDecimal maximum_balance) {
-		this.maximum_balance = maximum_balance;
-	}
-
 	public Long getRank_id() {
 		return rank_id;
 	}

@@ -90,50 +90,7 @@ public class ItemService {
 			e.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi lưu nhiều items", e);
 		}
-
 	}
-	//Delete Item
-	public void deleteItem(Long itemId) {
-		itemRepository.deleteById(itemId);
-	}
-	//Add multiple
-    public List<Item> createMultipleItems(List<Item> items, List<MultipartFile> imageFiles) throws IOException {
-        List<Item> savedItems = new ArrayList<>();
-        for (int i = 0; i < items.size(); i++) {
-            Item item = items.get(i);
-            MultipartFile imageFile = imageFiles.get(i);
-
-            String itemName = item.getName();
-            BigDecimal itemPrice = item.getPrice();
-
-            if (itemName == null || itemName.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "itemName không thể null hoặc trống");
-            }
-            if (itemPrice == null || itemPrice.compareTo(BigDecimal.ZERO) < 0) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "itemPrice không thể nhỏ hơn 0, hoặc không được null");
-            }
-            if (!isValidateImageFile(imageFile, allowExtensions)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Đuôi file không hợp lệ. Chỉ chấp nhận các đuôi: " + String.join(", ", allowExtensions));
-            }
-            
-            Item newItem = new Item();
-            newItem.setName(itemName);
-            newItem.setPrice(itemPrice);
-            newItem.setImageUrl(cloudinaryService.uploadImage(imageFile));
-
-            savedItems.add(newItem);
-        }
-
-        try {
-        	return itemRepository.saveAll(savedItems);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi lưu nhiều items", e);
-        }
-
-    }
 	//Add Item
 	public Item saveItem(Item item, MultipartFile imageFile) throws IOException {
 		// Xử lý các itemName trùng tên hoặc đã tồn tại

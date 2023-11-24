@@ -83,14 +83,12 @@ public class AuthenticationController {
 	public List<Auth> getAllUser(@RequestParam("role") Role role) {
 		return authRepository.getAllUsersList(role);
 	}
+
 	@PostMapping("/reset-password")
 	public ResponseEntity<String> resetPassword(@RequestParam String email) {
 		try {
 			authenticationService.resetPassword(email);
 			return ResponseEntity.ok("reset password success");
-                // Gán danh sách đường dẫn avatars cho người dùng
-//                user.setAvatars(avatarUrls);
-
 
 		} catch (MessagingException e) {
 			return ResponseEntity.status(500).body("reset password fail email.");
@@ -153,6 +151,3 @@ public class AuthenticationController {
 	}
 
 }
-  
-}
-

@@ -91,9 +91,6 @@ public class DonateServiceImpl implements DonateService {
 				purchaseRepository.save(recipientPurchase);
 			}
 
-//			fromUser.setBalance(fromUser.getBalance()
-//			.subtract(purchase.getItem_purchase().getPrice().multiply(BigDecimal.valueOf(quantity))));
-
 			fromUser.decreaseItemQuantity(purchase, quantity);
 			toUser.increaseItemQuantity(purchase, quantity);
 
