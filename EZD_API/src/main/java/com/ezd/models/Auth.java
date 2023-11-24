@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @Entity
 public class Auth implements UserDetails {
     @Id
@@ -134,40 +133,6 @@ public class Auth implements UserDetails {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	
-	
-	
-	public List<String> getAvatars() {
-		return avatars;
-	}
-
-	public void setAvatars(List<String> avatars) {
-		this.avatars = avatars;
-	}
-
-	public List<Donate> getDonationsFrom() {
-		return donationsFrom;
-	}
-
-	public void setDonationsFrom(List<Donate> donationsFrom) {
-		this.donationsFrom = donationsFrom;
-	}
-
-	public List<Donate> getDonationsTo() {
-		return donationsTo;
-	}
-
-	public void setDonationsTo(List<Donate> donationsTo) {
-		this.donationsTo = donationsTo;
-	}
-
-	public List<Product> getProducts() {
-		return products;
-	}
-
-	public void setProducts(List<Product> products) {
-		this.products = products;
 	}
 
 	public String getAddress() {
@@ -284,33 +249,4 @@ public class Auth implements UserDetails {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Auth(Long id, String name, String email, String password, List<String> avatars, String address,
-			String country, String phoneNumber, String gender, BigDecimal balance, StatusAccount status, Role role,
-			LocalDateTime birthDay, LocalDateTime createdDate, List<Transaction> transactions,
-			List<Donate> donationsFrom, List<Donate> donationsTo, List<Product> products, List<BecomeIdol> becomes,
-			List<LuckySpin> luckys) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.avatars = avatars;
-		this.address = address;
-		this.country = country;
-		this.phoneNumber = phoneNumber;
-		this.gender = gender;
-		this.balance = balance;
-		this.status = status;
-		this.role = role;
-		this.birthDay = birthDay;
-		this.createdDate = createdDate;
-		this.transactions = transactions;
-		this.donationsFrom = donationsFrom;
-		this.donationsTo = donationsTo;
-		this.products = products;
-		this.becomes = becomes;
-		this.luckys = luckys;
-	}
-
-    
 }
