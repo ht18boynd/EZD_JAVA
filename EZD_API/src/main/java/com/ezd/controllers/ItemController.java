@@ -1,6 +1,7 @@
 package com.ezd.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ import com.ezd.service.ItemService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("api/items")
+@RequestMapping("/api/items")
 public class ItemController {
 	
 	@Autowired
@@ -42,6 +43,13 @@ public class ItemController {
     public ResponseEntity<Item> saveItem(@Valid @ModelAttribute Item item, @RequestPart("imageFile") MultipartFile imageFile) throws IOException {
         Item savedItem = itemService.saveItem(item, imageFile);
         return ResponseEntity.ok(savedItem);
+    }
+    
+    @RequestMapping(value = "/add-multiple",method = RequestMethod.POST)
+    public ResponseEntity<List<Item>> createMultipleItems(@Valid @ModelAttribute ArrayList<Item> items,
+    		@RequestPart("imageFile") List<MultipartFile> files) throws IOException {
+        List<Item> savedItems = itemService.createMultipleItems(items, files);
+        return ResponseEntity.ok(savedItems);
     }
     
     @RequestMapping(value = "/delete/{itemId}", method = RequestMethod.DELETE)

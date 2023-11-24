@@ -1,6 +1,5 @@
 package com.ezd.controllers;
 
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ezd.Dto.JwtAuthenticationResponse;
@@ -11,6 +10,7 @@ import com.ezd.Dto.SignUpRequest;
 import com.ezd.models.Auth;
 import com.ezd.repository.AuthRepository;
 import com.ezd.service.AuthenticationService;
+import com.ezd.service.PurchaseService;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -35,105 +35,119 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
 public class AuthenticationController {
-	@Autowired 
+	@Autowired
+	private AuthRepository authRepository;
 
-	private final  AuthRepository authRepository;
-    private  final AuthenticationService authenticationService;
-    
-    @Autowired
-    private Cloudinary cloudinary;
+	@Autowired
+	private AuthenticationService authenticationService;
+	
+	@Autowired
+	private PurchaseService purchaseService;
+	
+	@Autowired
+	private Cloudinary cloudinary;
 
-    @PostMapping("/signup")
-    public ResponseEntity<Auth> signup(@RequestBody SignUpRequest signUpRequest) throws MessagingException  {
-        return  ResponseEntity.ok(authenticationService.signup(signUpRequest));
-    }
+	@PostMapping("/signup")
+	public ResponseEntity<Auth> signup(@RequestBody SignUpRequest signUpRequest) throws MessagingException {
+		return ResponseEntity.ok(authenticationService.signup(signUpRequest));
+	}
 
-    @PostMapping("/signin")
-    public  ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SignInRequest signInRequest) {
-        return  ResponseEntity.ok(authenticationService.signin(signInRequest));
-    }
-    @PostMapping("/signinAdmin")
-    public  ResponseEntity<JwtAuthenticationResponse> signinAdmin(@RequestBody SignInRequest signInRequest) {
-        return  ResponseEntity.ok(authenticationService.signinAdmin(signInRequest));
-    }
+	@PostMapping("/signin")
+	public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SignInRequest signInRequest) {
+		return ResponseEntity.ok(authenticationService.signin(signInRequest));
+	}
 
-    @PostMapping("/refresh")
-    public  ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        return  ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
-    }
-    @GetMapping("/findByEmail")
-    public ResponseEntity<Optional<Auth>> findByEmail(@RequestParam String email) {
-        Optional<Auth> auth = authRepository.findByEmail(email);
+	@PostMapping("/signinAdmin")
+	public ResponseEntity<JwtAuthenticationResponse> signinAdmin(@RequestBody SignInRequest signInRequest) {
+		return ResponseEntity.ok(authenticationService.signinAdmin(signInRequest));
+	}
 
-        if (auth != null) {
-            return ResponseEntity.ok(auth);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-    @GetMapping("/")
-    public List<Auth> getAllUser(@RequestParam("role") Role role) {
-        return  authRepository.getAllUsersList(role);
-    }
-    
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email) {
-        try {
-            authenticationService.resetPassword(email);
-            return ResponseEntity.ok("reset password success");
-       
-        } catch (MessagingException e) {
-            return ResponseEntity.status(500).body("reset password fail email.");
-        }
-    }
-    
-    @PostMapping("/updatePassword")
-    public ResponseEntity<String> updatePassword(
-            @RequestParam String email,
-            @RequestParam String currentPassword,
-            @RequestParam String newPasword) {
-        try {
-            authenticationService.updatePassword(email, currentPassword, newPasword);
-            return ResponseEntity.ok("Password updated successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-    
-    @PutMapping("/editAvatar")
-    public ResponseEntity<Auth> updateAvatar(@RequestParam("id") Long id, @RequestParam("avatarImages") List<MultipartFile> avatarImages) {
-        Optional<Auth> optionalUser = authRepository.findById(id);
+	@PostMapping("/refresh")
+	public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+		return ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
+	}
 
-        if (optionalUser.isPresent()) {
-            Auth user = optionalUser.get();
+	@GetMapping("/findByEmail")
+	public ResponseEntity<Optional<Auth>> findByEmail(@RequestParam String email) {
+		Optional<Auth> auth = authRepository.findByEmail(email);
 
-            try {
-                List<String> avatarUrls = new ArrayList<>();
+		if (auth != null) {
+			return ResponseEntity.ok(auth);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
-                // Lặp qua từng ảnh và upload lên Cloudinary
-                for (MultipartFile avatarImage : avatarImages) {
-                    if (avatarImage != null) {
-                        Map uploadResult = cloudinary.uploader().upload(avatarImage.getBytes(), ObjectUtils.emptyMap());
-                        String imageUrl = (String) uploadResult.get("url");
-                        avatarUrls.add(imageUrl);
-                    }
-                }
+	@GetMapping("/")
+	public List<Auth> getAllUser(@RequestParam("role") Role role) {
+		return authRepository.getAllUsersList(role);
+	}
 
-                // Gán danh sách đường dẫn avatars cho người dùng
-                user.setAvatars(avatarUrls);
+	@PostMapping("/reset-password")
+	public ResponseEntity<String> resetPassword(@RequestParam String email) {
+		try {
+			authenticationService.resetPassword(email);
+			return ResponseEntity.ok("reset password success");
 
-                Auth updatedUser = authRepository.save(user);
-                return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+		} catch (MessagingException e) {
+			return ResponseEntity.status(500).body("reset password fail email.");
+		}
+	}
 
-  
+//	@PostMapping("/{userId}/buyItem")
+//	public ResponseEntity<?> buyItem(@RequestParam Long userId, @RequestBody PurchaseRequest request) {
+//		try {
+//			purchaseService.buyItem(userId, request.getItemId(), request.getQuantity());
+//			return ResponseEntity.ok("Item purchased successfully.");
+//		} catch (Exception e) {
+//			return ResponseEntity.badRequest().body(e.getMessage());
+//		}
+//	}
+
+	@PostMapping("/updatePassword")
+	public ResponseEntity<String> updatePassword(@RequestParam String email, @RequestParam String currentPassword,
+			@RequestParam String newPasword) {
+		try {
+			authenticationService.updatePassword(email, currentPassword, newPasword);
+			return ResponseEntity.ok("Password updated successfully");
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+
+	@PutMapping("/editAvatar")
+	public ResponseEntity<Auth> updateAvatar(@RequestParam("id") Long id,
+			@RequestParam("avatarImages") List<MultipartFile> avatarImages) {
+		Optional<Auth> optionalUser = authRepository.findById(id);
+
+		if (optionalUser.isPresent()) {
+			Auth user = optionalUser.get();
+
+			try {
+				List<String> avatarUrls = new ArrayList<>();
+
+				// Lặp qua từng ảnh và upload lên Cloudinary
+				for (MultipartFile avatarImage : avatarImages) {
+					if (avatarImage != null) {
+						Map uploadResult = cloudinary.uploader().upload(avatarImage.getBytes(), ObjectUtils.emptyMap());
+						String imageUrl = (String) uploadResult.get("url");
+						avatarUrls.add(imageUrl);
+					}
+				}
+
+				// Gán danh sách đường dẫn avatars cho người dùng
+				user.setAvatars(avatarUrls);
+
+				Auth updatedUser = authRepository.save(user);
+				return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
 }

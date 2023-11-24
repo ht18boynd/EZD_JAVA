@@ -41,7 +41,7 @@ public class BecomeIdol {
 	private String url_youtube;
 	private LocalDateTime becomeTime;
 	private Status status;
-
+	
 	private boolean checkedByAdmin;
 	private LocalDateTime adminCheckTime;
 

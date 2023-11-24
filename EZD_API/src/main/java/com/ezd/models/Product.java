@@ -59,9 +59,81 @@ public class Product {
 	
 	private StatusAccount status;
 	private Date created_date;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Auth getUser_product() {
+		return user_product;
+	}
+	public void setUser_product(Auth user_product) {
+		this.user_product = user_product;
+	}
+	public Game getGame_product() {
+		return game_product;
+	}
+	public void setGame_product(Game game_product) {
+		this.game_product = game_product;
+	}
+	public PerfectRole getRole_product() {
+		return role_product;
+	}
+	public void setRole_product(PerfectRole role_product) {
+		this.role_product = role_product;
+	}
+	public LevelGame getLevel_product() {
+		return level_product;
+	}
+	public void setLevel_product(LevelGame level_product) {
+		this.level_product = level_product;
+	}
+	public Gender getGender_product() {
+		return gender_product;
+	}
+	public void setGender_product(Gender gender_product) {
+		this.gender_product = gender_product;
+	}
+	public String getImg_product() {
+		return img_product;
+	}
+	public void setImg_product(String img_product) {
+		this.img_product = img_product;
+	}
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+	public int getHour() {
+		return hour;
+	}
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+	public String getDecription() {
+		return decription;
+	}
+	public void setDecription(String decription) {
+		this.decription = decription;
+	}
+	public StatusAccount getStatus() {
+		return status;
+	}
+	public void setStatus(StatusAccount status) {
+		this.status = status;
+	}
+	public Date getCreated_date() {
+		return created_date;
+	}
+	public void setCreated_date(Date created_date) {
+		this.created_date = created_date;
+	}
 	
 
-
+	
 	
 	
 	

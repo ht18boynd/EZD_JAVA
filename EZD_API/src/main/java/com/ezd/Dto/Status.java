@@ -1,7 +1,6 @@
 package com.ezd.Dto;
 
-public enum Status
-{
+public enum Status {
 
 	FAILED, PENDING, SUCCESS
 }

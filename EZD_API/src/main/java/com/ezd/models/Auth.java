@@ -1,11 +1,12 @@
 package com.ezd.models;
 
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,83 +25,85 @@ import java.util.List;
 @Data
 @Entity
 public class Auth implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String name;
-    private String email;
-    private String password;
-    @ElementCollection
-    private List<String> avatars;
-    private String address;
-    private String country;
-    private String phoneNumber;
-    private String gender;
-    private BigDecimal balance = BigDecimal.ZERO;
-    private StatusAccount status;
-    
-    @JsonInclude(JsonInclude.Include.ALWAYS)
-    private Role role;
-    private LocalDateTime birthDay;
-    private LocalDateTime createdDate;
-    
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_transaction")
-    private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	private String name;
+	private String email;
+	private String password;
+	@ElementCollection
+	private List<String> avatars;
+	private String address;
+	private String country;
+	private String phoneNumber;
+	private String gender;
+	private BigDecimal balance = BigDecimal.ZERO;
+	private StatusAccount status;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_from")
-    private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_to")
-    private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
+	@JsonInclude(JsonInclude.Include.ALWAYS)
+	private Role role;
 
-   
-    
+	@ManyToOne
+	@JoinColumn(name = "rank_id", referencedColumnName = "id")
+	private Rank currentRank;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_product")
-    private List<Product> products ;
+	private LocalDateTime birthDay;
+	private LocalDateTime createdDate;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user_become")
-    private List<BecomeIdol> becomes ;
+	@JsonBackReference
+	@OneToMany(mappedBy = "auth_purchase")
+	private List<Purchase> purchases;
 
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_transaction")
+	private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
-    @JsonBackReference
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_from")
+	private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
 
-    @OneToMany(mappedBy = "user_lucky")
-    private List<LuckySpin> luckys; //
-    
-   
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_to")
+	private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_product")
+	private List<Product> products;
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_become")
+	private List<BecomeIdol> becomes;
 
+	@JsonBackReference
+	@OneToMany(mappedBy = "user_lucky")
+	private List<LuckySpin> luckys; //
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(role.name()));
+	}
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+	@Override
+	public String getPassword() {
+		return password;
+	}
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+	@Override
+	public String getUsername() {
+		return email;
+	}
 
-    public Long getId() {
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	public Long getId() {
 		return id;
 	}
 
@@ -122,14 +125,6 @@ public class Auth implements UserDetails {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getAvatar() {
-		return avatar;
-	}
-
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
 	}
 
 	public String getAddress() {
@@ -212,6 +207,37 @@ public class Auth implements UserDetails {
 		this.transactions = transactions;
 	}
 
+	public List<String> getAvatars() {
+		return avatars;
+	}
+
+	public void setAvatars(List<String> avatars) {
+		this.avatars = avatars;
+	}
+
+	public List<Donate> getDonationsFrom() {
+		return donationsFrom;
+	}
+
+	public void setDonationsFrom(List<Donate> donationsFrom) {
+		this.donationsFrom = donationsFrom;
+	}
+
+	public List<Donate> getDonationsTo() {
+		return donationsTo;
+	}
+
+	public void setDonationsTo(List<Donate> donationsTo) {
+		this.donationsTo = donationsTo;
+	}
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
 
 	public List<BecomeIdol> getBecomes() {
 		return becomes;
@@ -234,39 +260,45 @@ public class Auth implements UserDetails {
 	}
 
 	@Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-    public Auth() {
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+	public Auth() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Auth(Long id, String name, String email, String password, String avatar, String address, String country,
-			String phoneNumber, String gender, BigDecimal balance, StatusAccount status, Role role,
-			LocalDateTime birthDay, LocalDateTime createdDate, List<Transaction> transactions, List<BecomeIdol> becomes,
-			List<LuckySpin> luckys) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.avatar = avatar;
-		this.address = address;
-		this.country = country;
-		this.phoneNumber = phoneNumber;
-		this.gender = gender;
-		this.balance = balance;
-		this.status = status;
-		this.role = role;
-		this.birthDay = birthDay;
-		this.createdDate = createdDate;
-		this.transactions = transactions;
-		this.becomes = becomes;
-		this.luckys = luckys;
+	public Rank getCurrentRank() {
+		return currentRank;
+	}
+
+	public void setCurrentRank(Rank currentRank) {
+		this.currentRank = currentRank;
+	}
+	
+	public List<Purchase> getPurchases() {
+		return purchases;
+	}
+
+	public void setPurchases(List<Purchase> purchases) {
+		this.purchases = purchases;
+	}
+
+	// Cập nhật số lượng item giảm cho người mua
+	public void decreaseItemQuantity(Purchase purchase, int quantity) {
+		if (purchase != null) {
+			purchase.setQuantity(purchase.getQuantity() - quantity);
+		}
+	}
+
+	public void increaseItemQuantity(Purchase purchase, int quantity) {
+		if (purchase != null) {
+			purchase.setQuantity(purchase.getQuantity() + quantity);
+		}
 	}
 }
