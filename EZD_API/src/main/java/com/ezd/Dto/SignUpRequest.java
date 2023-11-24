@@ -18,7 +18,7 @@ public class SignUpRequest {
     private BigDecimal balance;
     private StatusAccount status;
     private Role role;
-    private LocalDateTime birthDay;
+    private String birthDay;
     private LocalDateTime createdDate;
     public SignUpRequest() {
 		// TODO Auto-generated constructor stub
@@ -83,10 +83,10 @@ public class SignUpRequest {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	public LocalDateTime getBirthDay() {
+	public String getBirthDay() {
 		return birthDay;
 	}
-	public void setBirthDay(LocalDateTime birthDay) {
+	public void setBirthDay(String birthDay) {
 		this.birthDay = birthDay;
 	}
 	public LocalDateTime getCreatedDate() {
@@ -96,7 +96,7 @@ public class SignUpRequest {
 		this.createdDate = createdDate;
 	}
 	public SignUpRequest(String name, String email, String password, String address, String country, String phoneNumber,
-			String gender, BigDecimal balance, StatusAccount status, Role role, LocalDateTime birthDay,
+			String gender, BigDecimal balance, StatusAccount status, Role role, String birthDay,
 			LocalDateTime createdDate) {
 		super();
 		this.name = name;

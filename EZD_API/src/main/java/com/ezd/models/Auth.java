@@ -16,11 +16,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.ezd.Dto.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+
+import com.ezd.LocalDateTimeDeserializer;
+@Data
+
 
 @Entity
 public class Auth implements UserDetails {
@@ -76,12 +81,18 @@ public class Auth implements UserDetails {
 	@OneToMany(mappedBy = "user_lucky")
 	private List<LuckySpin> luckys; //
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority(role.name()));
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
 
-	public Rank getCurrentRank() {
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    
+    public Rank getCurrentRank() {
 		return currentRank;
 	}
 
@@ -197,11 +208,11 @@ public class Auth implements UserDetails {
 		this.role = role;
 	}
 
-	public LocalDateTime getBirthDay() {
+	public String getBirthDay() {
 		return birthDay;
 	}
 
-	public void setBirthDay(LocalDateTime birthDay) {
+	public void setBirthDay(String birthDay) {
 		this.birthDay = birthDay;
 	}
 

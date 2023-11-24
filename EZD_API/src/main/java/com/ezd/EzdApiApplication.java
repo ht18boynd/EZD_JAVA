@@ -29,7 +29,7 @@ public class EzdApiApplication implements CommandLineRunner {
 			auth.setEmail("admin@gmail.com");
 			auth.setRole(Role.ADMIN);
 
-			auth.setPassword(new BCryptPasswordEncoder().encode("viet1998"));
+			auth.setPassword(new BCryptPasswordEncoder().encode("admin1234"));
 			authRepository.save(auth);
 
 		}
