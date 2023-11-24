@@ -17,11 +17,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.ezd.Dto.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+
+import com.ezd.LocalDateTimeDeserializer;
+@Data
+
 
 @Entity
 public class Auth implements UserDetails {
@@ -42,7 +46,12 @@ public class Auth implements UserDetails {
     
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private Role role;
-    private LocalDateTime birthDay;
+    
+    
+    
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+
+    private String birthDay;
     private LocalDateTime createdDate;
     
     @ManyToOne
@@ -191,11 +200,11 @@ public class Auth implements UserDetails {
 		this.role = role;
 	}
 
-	public LocalDateTime getBirthDay() {
+	public String getBirthDay() {
 		return birthDay;
 	}
 
-	public void setBirthDay(LocalDateTime birthDay) {
+	public void setBirthDay(String birthDay) {
 		this.birthDay = birthDay;
 	}
 
