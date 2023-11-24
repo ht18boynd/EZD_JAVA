@@ -1,9 +1,14 @@
 package com.ezd.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ezd.models.Rank;
+import com.ezd.service.CloudinaryService;
 //import com.ezd.repository.RankRepository;
 import com.ezd.service.RankService;
 
@@ -27,6 +33,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/ranks")
+//@CrossOrigin(origins = "http://localhost:8000/")
 public class RankController {
 
 	@Autowired
@@ -62,7 +69,6 @@ public class RankController {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
 		}
-
 	}
 
 	@RequestMapping(value = "/edit/{rankId}", method = RequestMethod.PUT)
@@ -76,7 +82,6 @@ public class RankController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
 	}
 
 	@RequestMapping(value = "/delete/{rankId}", method = RequestMethod.DELETE)

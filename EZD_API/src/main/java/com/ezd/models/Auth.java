@@ -22,61 +22,57 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @Entity
 public class Auth implements UserDetails {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-	private String name;
-	private String email;
-	private String password;
-	@ElementCollection
-	private List<String> avatars;
-	private String address;
-	private String country;
-	private String phoneNumber;
-	private String gender;
-	private BigDecimal balance = BigDecimal.ZERO;
-	private StatusAccount status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String name;
+    private String email;
+    private String password;
+    @ElementCollection
+    private List<String> avatars;
+    private String address;
+    private String country;
+    private String phoneNumber;
+    private String gender;
+    private BigDecimal balance = BigDecimal.ZERO;
+    private StatusAccount status;
+    
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    private Role role;
+    private LocalDateTime birthDay;
+    private LocalDateTime createdDate;
+    
+    @ManyToOne
+    @JoinColumn(name = "rank_id")
+    private Rank currentRank;
+    
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_transaction")
+    private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
 
-	@JsonInclude(JsonInclude.Include.ALWAYS)
-	private Role role;
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_from")
+    private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
+    
+    @JsonBackReference
+    
+    @OneToMany(mappedBy = "user_to")
+    private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
 
-	@ManyToOne
-	@JoinColumn(name = "rank_id", referencedColumnName = "id")
-	private Rank currentRank;
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_product")
+    private List<Product> products ;
 
-	private LocalDateTime birthDay;
-	private LocalDateTime createdDate;
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "auth_purchase")
-	private List<Purchase> purchases;
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "user_transaction")
-	private List<Transaction> transactions; // Thêm danh sách giao dịch mà người dùng đã thực hiện
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "user_from")
-	private List<Donate> donationsFrom; // Thêm danh sách donate từ người gửi
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "user_to")
-	private List<Donate> donationsTo; // Thêm danh sách donate đến người nhận
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "user_product")
-	private List<Product> products;
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "user_become")
-	private List<BecomeIdol> becomes;
-
-	@JsonBackReference
-	@OneToMany(mappedBy = "user_lucky")
-	private List<LuckySpin> luckys; //
+    @JsonBackReference
+    @OneToMany(mappedBy = "user_become")
+    private List<BecomeIdol> becomes ;
+    
+    @JsonBackReference
+    
+    @OneToMany(mappedBy = "user_lucky")
+    private List<LuckySpin> luckys; //
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -271,34 +267,5 @@ public class Auth implements UserDetails {
 
 	public Auth() {
 		// TODO Auto-generated constructor stub
-	}
-
-	public Rank getCurrentRank() {
-		return currentRank;
-	}
-
-	public void setCurrentRank(Rank currentRank) {
-		this.currentRank = currentRank;
-	}
-	
-	public List<Purchase> getPurchases() {
-		return purchases;
-	}
-
-	public void setPurchases(List<Purchase> purchases) {
-		this.purchases = purchases;
-	}
-
-	// Cập nhật số lượng item giảm cho người mua
-	public void decreaseItemQuantity(Purchase purchase, int quantity) {
-		if (purchase != null) {
-			purchase.setQuantity(purchase.getQuantity() - quantity);
-		}
-	}
-
-	public void increaseItemQuantity(Purchase purchase, int quantity) {
-		if (purchase != null) {
-			purchase.setQuantity(purchase.getQuantity() + quantity);
-		}
 	}
 }

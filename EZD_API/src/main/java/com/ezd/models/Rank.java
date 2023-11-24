@@ -2,8 +2,8 @@ package com.ezd.models;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,10 +21,10 @@ public class Rank {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private Long rank_id;
 
 	@Column(name = "rankName", nullable = false, length = 50)
 	private String rank_name;
-
 	@Column(name = "minimumBalance", precision = 15, scale = 2)
 	private BigDecimal minimum_balance;
 
@@ -45,8 +45,16 @@ public class Rank {
 		super();
 	}
 
-	public Long getId() {
-		return id;
+	public BigDecimal getMaximum_balance() {
+		return maximum_balance;
+	}
+
+	public void setMaximum_balance(BigDecimal maximum_balance) {
+		this.maximum_balance = maximum_balance;
+	}
+
+	public Long getRank_id() {
+		return rank_id;
 	}
 
 	public void setId(Long id) {

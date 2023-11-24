@@ -50,7 +50,6 @@ public class Donate {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	
 	public int getQuantity() {
 		return quantity;
@@ -60,7 +59,6 @@ public class Donate {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-
 
 	public BigDecimal getAmount() {
 		return amount;
@@ -100,7 +98,6 @@ public class Donate {
 	public void setTransactionDate(LocalDateTime transactionDate) {
 		this.transactionDate = transactionDate;
 	}
-
 
 	public Item getItems() {
 		return items;

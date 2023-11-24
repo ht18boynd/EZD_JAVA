@@ -1,5 +1,7 @@
 package com.ezd.service;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ezd.Dto.JwtAuthenticationResponse;
@@ -24,5 +26,5 @@ public interface AuthenticationService extends JpaRepository<Auth, Long> {
 	
     void updatePassword(String userEmail, String currentPassword, String newPassword);
 
-
+    Optional<Auth> getAuthById(Long id);
 }

@@ -34,6 +34,7 @@ import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,18 +71,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		this.jwtService = jwtService;
 		this.templateEngine = templateEngine;
 	}
+    private static final String ALLOWED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	 public void resetPassword(String email) {
+	        // Kiểm tra xem người dùng có tồn tại hay không
+	        Auth user = userRepository.findByEmail(email)
+	                .orElseThrow();
 
 	public void resetPassword(String email) {
 		// Kiểm tra xem người dùng có tồn tại hay không
 		Auth user = userRepository.findByEmail(email).orElseThrow();
 
-		// Tạo mật khẩu mới
-		String newPassword = generateRandomPassword();
+	        // Tạo mật khẩu mới
+	        String newPassword = generateRandomPassword(10);
 
 		// Cập nhật mật khẩu mới trong cơ sở dữ liệu
 		user.setPassword(passwordEncoder.encode(newPassword));
 		userRepository.save(user);
-
 		// Gửi email thông báo về mật khẩu mới
 		sendPasswordResetEmail(user.getName(), email, newPassword);
 	}
@@ -110,7 +116,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		// Bạn có thể sử dụng thư viện như Apache Commons Lang để tạo chuỗi ngẫu nhiên.
 		return RandomStringUtils.randomAlphanumeric(10);
 	}
+	        try {
+	        	Map<String, Object> model = new HashMap<>();
+				model.put("user", userName);
+				model.put("email", toEmail);
+				model.put("newPassword",newPassword);
+	            mailService.sendHtmlMail(mailStructure, toEmail, model, "password-reset");
+	        } catch (MessagingException | IOException e) {
+	            // Xử lý exception nếu cần
+	            e.printStackTrace();
+	        }
+	    }
+	 private static String generateRandomPassword(int length) {
+	        SecureRandom random = new SecureRandom();
+	        StringBuilder password = new StringBuilder();
 
+	        // Bảng ký tự cho phép
+	        String characters = ALLOWED_CHARACTERS;
+
+	        // Đảm bảo rằng chuỗi có chứa ít nhất một chữ cái và một số
+	        password.append(characters.charAt(random.nextInt(characters.length() - 10))); // ít nhất một chữ cái
+	        password.append(characters.charAt(random.nextInt(10))); // ít nhất một số
+
+	        // Tạo phần còn lại của chuỗi ngẫu nhiên
+	        for (int i = 2; i < length; i++) {
+	            password.append(characters.charAt(random.nextInt(characters.length())));
+	        }
+
+	        return password.toString();
+	    }
 	public Auth signup(SignUpRequest signUpRequest) {
 		Optional<Auth> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
 		if (existingUser.isPresent()) {
@@ -123,6 +157,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		List<String> avatars = new ArrayList<>();
 		avatars.add("https://res.cloudinary.com/dbdz9u1y6/image/upload/v1698467917/oogfmmehumkcbpxfaqrv.jpg");
 		user.setAvatars(avatars);
+//		    user.setAvatars(avatars);
 		user.setName(signUpRequest.getName());
 		user.setEmail(signUpRequest.getEmail());
 		user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));

@@ -24,7 +24,6 @@ public class TransactionService {
 
 	@Autowired
 	private AuthRepository authRepository;
-
 	@Autowired
 	private RankRepository rankRepository;
 
@@ -36,8 +35,9 @@ public class TransactionService {
 			// Liên kết thông tin giao dịch với người dùng
 			transaction.setUser_transaction(user);
 			transactionRepository.save(transaction);
+			// Kiểm tra và cập nhật Rank
+//			updateRankForUser(user, transaction.getAmount());
 		}
-
 	}
 
 	@Transactional
@@ -61,13 +61,14 @@ public class TransactionService {
 					BigDecimal newBalance = currentBalance.add(transactionAmount);
 					user.setBalance(newBalance);
 					// Lưu thông tin người dùng sau khi cập nhật số tiền
-//					authRepository.save(user);
+					authRepository.save(user);
+
+					// Kiểm tra và cập nhật Rank của người chơi
 
 					updateRankForUser(user, transactionAmount);
 				}
 			}
 		}
-
 	}
 
 	private void updateRankForUser(Auth user, BigDecimal transactionAmount) {
