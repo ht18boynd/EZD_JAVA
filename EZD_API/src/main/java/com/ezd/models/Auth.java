@@ -30,7 +30,7 @@ import com.ezd.LocalDateTimeDeserializer;
 @Entity
 public class Auth implements UserDetails {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
 	private String email;
@@ -46,12 +46,13 @@ public class Auth implements UserDetails {
 
 	@JsonInclude(JsonInclude.Include.ALWAYS)
 	private Role role;
-	private LocalDateTime birthDay;
+	private String birthDay;
 	private LocalDateTime createdDate;
 
 	@ManyToOne
-	@JoinColumn(name = "rank_id")
+	@JoinColumn(name = "rank_id",referencedColumnName = "id")
 	private Rank currentRank;
+	
 	@JsonBackReference
 	@OneToMany(mappedBy = "auth_purchase")
 	private List<Purchase> purchases;
@@ -85,12 +86,7 @@ public class Auth implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
+    
     
     public Rank getCurrentRank() {
 		return currentRank;

@@ -143,7 +143,7 @@ public class RankService {
 
 	// Xác định ID
 	private void validateExistingRank(Rank existingRank, Long rankId) {
-		if (!existingRank.getRank_id().equals(rankId)) {
+		if (!existingRank.getId().equals(rankId)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không khớp với ID: " + rankId);
 		}
 	}
