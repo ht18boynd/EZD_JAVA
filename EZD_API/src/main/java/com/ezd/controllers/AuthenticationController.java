@@ -79,10 +79,14 @@ public class AuthenticationController {
 		}
 	}
 
-	@GetMapping("/")
-	public List<Auth> getAllUser(@RequestParam("role") Role role) {
-		return authRepository.getAllUsersList(role);
-	}
+	 @GetMapping("/role")
+	    public List<Auth> getAllUser(@RequestParam("role") Role role) {
+	        return  authRepository.getAllUsersList(role);
+	    }
+	    @GetMapping("/")
+	    public List<Auth> getAllUser() {
+	        return  authRepository.findAll();
+	    }
 
 	@PostMapping("/reset-password")
 	public ResponseEntity<String> resetPassword(@RequestParam String email) {
